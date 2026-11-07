@@ -118,7 +118,7 @@ function CatalogoPrincipalContent() {
 
         {/* Estado de Carregamento (Skeleton) */}
         {isLoading && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-5">
             {Array.from({ length: 8 }).map((_, idx) => (
               <div
                 key={idx}
@@ -182,7 +182,7 @@ function CatalogoPrincipalContent() {
 
         {/* Visualização em Grade (Grid) */}
         {!isLoading && !isError && produtos.length > 0 && viewMode === 'grid' && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5">
             {produtos.map((produto) => (
               <ProdutoCard
                 key={produto.id || produto.sku}
