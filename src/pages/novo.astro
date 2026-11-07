@@ -1,0 +1,11 @@
+---
+// src/pages/novo.astro
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { QueryProvider } from '@/components/providers/QueryProvider';
+import { NovoProdutoTabs } from '@/components/forms/NovoProdutoTabs';
+---
+<BaseLayout title="Cadastrar Nova Roda | Catálogo Automotivo">
+  <QueryProvider client:load>
+    <NovoProdutoTabs client:load />
+  </QueryProvider>
+</BaseLayout>
