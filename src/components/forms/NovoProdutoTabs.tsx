@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { PenTool, FileSpreadsheet } from 'lucide-react';
 import { CadastroManualForm } from './CadastroManualForm';
 import { PlanilhaImportador } from './PlanilhaImportador';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 
-export function NovoProdutoTabs() {
+function NovoProdutoTabsContent() {
   const [activeTab, setActiveTab] = useState<'manual' | 'planilha'>('manual');
 
   return (
@@ -53,3 +54,12 @@ export function NovoProdutoTabs() {
     </main>
   );
 }
+
+export function NovoProdutoTabs() {
+  return (
+    <QueryProvider>
+      <NovoProdutoTabsContent />
+    </QueryProvider>
+  );
+}
+

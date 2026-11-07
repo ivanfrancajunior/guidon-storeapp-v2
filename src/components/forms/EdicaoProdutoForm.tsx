@@ -4,12 +4,13 @@ import { LiveCardPreview } from './LiveCardPreview';
 import { useProdutoDetailQuery } from '@/hooks/useProdutosQuery';
 import { useProdutoMutations } from '@/hooks/useProdutoMutations';
 import { ProdutoSchema, type Produto } from '@/lib/schemas/produto';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 
 interface Props {
   id: string;
 }
 
-export function EdicaoProdutoForm({ id }: Props) {
+function EdicaoProdutoFormContent({ id }: Props) {
   const { data: initialProduto, isLoading, isError } = useProdutoDetailQuery(id);
   const { atualizarProduto } = useProdutoMutations();
 
@@ -351,3 +352,12 @@ export function EdicaoProdutoForm({ id }: Props) {
     </div>
   );
 }
+
+export function EdicaoProdutoForm({ id }: Props) {
+  return (
+    <QueryProvider>
+      <EdicaoProdutoFormContent id={id} />
+    </QueryProvider>
+  );
+}
+

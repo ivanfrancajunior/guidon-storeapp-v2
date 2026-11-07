@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { ArrowLeft, Edit3, Trash2, ShieldCheck, Wrench, Layers } from 'lucide-react';
 import { useProdutoDetailQuery } from '@/hooks/useProdutosQuery';
 import { useProdutoMutations } from '@/hooks/useProdutoMutations';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 
 interface Props {
   sku: string;
 }
 
-export function ProdutoDetalheView({ sku }: Props) {
+function ProdutoDetalheViewContent({ sku }: Props) {
   const { data: produto, isLoading, isError, error } = useProdutoDetailQuery(sku);
   const { excluirProduto } = useProdutoMutations();
   const [selectedImgIndex, setSelectedImgIndex] = useState(0);
@@ -217,3 +218,12 @@ export function ProdutoDetalheView({ sku }: Props) {
     </main>
   );
 }
+
+export function ProdutoDetalheView({ sku }: Props) {
+  return (
+    <QueryProvider>
+      <ProdutoDetalheViewContent sku={sku} />
+    </QueryProvider>
+  );
+}
+

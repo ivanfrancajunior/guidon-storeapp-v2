@@ -5,9 +5,10 @@ import { ProdutoCard } from './ProdutoCard';
 import { ProdutoPreviewModal } from './ProdutoPreviewModal';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useProdutosQuery } from '@/hooks/useProdutosQuery';
+import { QueryProvider } from '@/components/providers/QueryProvider';
 import type { Produto, FiltrosCatalogo } from '@/lib/schemas/produto';
 
-export function CatalogoPrincipal() {
+function CatalogoPrincipalContent() {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [filtros, setFiltros] = useState<FiltrosCatalogo>({
     q: '',
@@ -290,3 +291,12 @@ export function CatalogoPrincipal() {
     </div>
   );
 }
+
+export function CatalogoPrincipal() {
+  return (
+    <QueryProvider>
+      <CatalogoPrincipalContent />
+    </QueryProvider>
+  );
+}
+
