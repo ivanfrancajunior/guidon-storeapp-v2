@@ -1,0 +1,15 @@
+---
+// src/pages/editar/[id].astro
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { QueryProvider } from '@/components/providers/QueryProvider';
+import { EdicaoProdutoForm } from '@/components/forms/EdicaoProdutoForm';
+
+const { id } = Astro.params;
+---
+<BaseLayout title="Editar Produto | Catálogo de Rodas">
+  <QueryProvider client:load>
+    <main className="max-w-[1520px] mx-auto px-4 sm:px-6 py-8">
+      <EdicaoProdutoForm id={id!} client:load />
+    </main>
+  </QueryProvider>
+</BaseLayout>
