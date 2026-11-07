@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, RotateCcw, Filter, ChevronDown } from 'lucide-react';
+import { Search, RotateCcw, Filter } from 'lucide-react';
 import type { FiltrosCatalogo, Produto } from '@/lib/schemas/produto';
 
 interface Props {
