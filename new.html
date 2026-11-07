@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar Roda - Catálogo Automotivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --border-focus: #2563eb;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --primary: #0f172a;
+      --primary-hover: #1e293b;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --success: #16a34a;
+      --success-light: #ecfdf5;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --radius-card: 16px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.4;
+      padding-bottom: 60px;
+    }
+
+    /* Topbar */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .btn-back:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .topbar-title {
+      font-size: 1.125rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    /* Seletor de Modo no Topo */
+    .mode-switch {
+      display: inline-flex;
+      background: #f1f5f9;
+      border-radius: var(--radius-pill);
+      padding: 4px;
+      border: 1px solid var(--border);
+    }
+
+    .mode-btn {
+      padding: 8px 20px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: transparent;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+    }
+
+    .mode-btn.active {
+      background: #ffffff;
+      color: var(--text-main);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      padding: 10px 18px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-primary {
+      padding: 10px 22px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Container */
+    .main-container {
+      max-width: 1440px;
+      margin: 32px auto 0;
+      padding: 0 36px;
+    }
+
+    /* MODO MANUAL (Grid Formulário + Live Preview) */
+    .manual-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .form-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .section-desc {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .form-grid.grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.col-span-2 {
+      grid-column: span 2;
+    }
+
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.875rem;
+      color: var(--text-main);
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    /* Upload Quadrado */
+    .photo-manager {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .photo-frame-empty {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #f8fafc;
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .photo-frame-empty img {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      display: none;
+    }
+
+    .dropzone-box {
+      border: 1.5px dashed var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      background: #fafafa;
+      transition: all 0.2s;
+    }
+
+    .dropzone-box:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    /* Live Preview */
+    .preview-column {
+      position: sticky;
+      top: 92px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .wheel-card-preview {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    .preview-img-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .preview-img {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
+    }
+
+    .preview-details {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preview-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preview-sku {
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: var(--text-muted);
+    }
+
+    .spec-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 4px 0 8px;
+    }
+
+    .spec-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      background: #f1f5f9;
+      color: #1e293b;
+      border-radius: var(--radius-pill);
+    }
+
+    .card-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 10px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .meta-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .meta-value-stock {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .meta-value-brand {
+      font-size: 0.875rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-main);
+      text-align: right;
+    }
+
+    /* MODO IMPORTAR PLANILHA */
+    .import-layout {
+      display: none;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    .import-hero-box {
+      background: var(--surface);
+      border: 2px dashed #cbd5e1;
+      border-radius: 20px;
+      padding: 48px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .import-hero-box:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .import-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 16px;
+      color: var(--accent);
+    }
+
+    .import-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .import-sub {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .sheet-format-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 0.875rem;
+    }
+
+    .btn-download-template {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      padding: 8px 16px;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-download-template:hover {
+      background: #e2e8f0;
+    }
+
+    /* Tabela de Preview da Planilha */
+    .sheet-preview-card {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 24px;
+    }
+
+    .sheet-table-wrapper {
+      max-height: 380px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 16px;
+    }
+
+    table.sheet-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      text-align: left;
+    }
+
+    table.sheet-table th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    table.sheet-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 14px 22px;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Topbar com Alternância de Modo -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="btn-back" onclick="alert('Voltar ao Catálogo')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Voltar
+      </button>
+      <h1 class="topbar-title">Novo Produto</h1>
+
+      <!-- Alternador de Modos -->
+      <div class="mode-switch">
+        <button class="mode-btn active" id="btnModeManual">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+          </svg>
+          Cadastro Manual
+        </button>
+        <button class="mode-btn" id="btnModeSheet">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Importar da Planilha
+        </button>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="btn-secondary" id="btnCancel">Cancelar</button>
+      <button class="btn-primary" id="btnMainAction">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        <span id="btnMainActionText">Cadastrar Roda</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <!-- ==================== MODO 1: CADASTRO MANUAL ==================== -->
+    <div class="manual-layout" id="manualLayout">
+
+      <div class="form-column">
+
+        <!-- Foto -->
+        <section class="section-card">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Fotografia da Roda</h2>
+              <p class="section-desc">A imagem é ajustada no formato quadrado 1:1 sem distorcer o modelo.</p>
+            </div>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">1:1 Proporção</span>
+          </div>
+
+          <div class="photo-manager">
+            <div class="photo-frame-empty" id="photoFrame" onclick="document.getElementById('manualFileInput').click()">
+              <img src="" alt="Preview" id="uploadedPreviewImg">
+              <div id="emptyPhotoPlaceholder">
+                <svg width="32" height="32" fill="none" stroke="#94a3b8" viewBox="0 0 24 24" style="margin: 0 auto 8px;">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <div style="font-size: 0.8125rem; font-weight: 600; color: var(--text-muted);">Adicionar Imagem</div>
+              </div>
+            </div>
+
+            <div>
+              <input type="file" id="manualFileInput" accept="image/*" style="display: none;">
+              <div class="dropzone-box" onclick="document.getElementById('manualFileInput').click()">
+                <div style="font-size: 0.875rem; font-weight: 700; color: var(--text-main);">Selecione a foto da roda</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">PNG, JPG ou WEBP (fundo branco ou transparente recomendado)</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Identificação -->
+        <section class="section-card">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Identificação do Produto</h2>
+              <p class="section-desc">Dados que identificam o modelo no catálogo.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label" for="newModelName">Nome do Modelo *</label>
+              <input type="text" id="newModelName" class="form-input" placeholder="Ex: Scorro Opala SS Clássica" autofocus>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="newSku">Código SKU *</label>
+              <input type="text" id="newSku" class="form-input" placeholder="Ex: ROD-00128">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="newBrand">Marca / Fabricante *</label>
+              <select id="newBrand" class="form-select">
+                <option value="SCORRO" selected>SCORRO</option>
+                <option value="KROMMA">KROMMA</option>
+                <option value="TSW">TSW</option>
+                <option value="VOLCANO">VOLCANO</option>
+                <option value="ENKEI">ENKEI</option>
+                <option value="BBS">BBS</option>
+                <option value="OUTRA">Outra Marca...</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- Especificações -->
+        <section class="section-card">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">Especificações Técnicas</h2>
+              <p class="section-desc">Preencha as medidas para permitir busca rápida e filtros exatos.</p>
+            </div>
+          </div>
+
+          <div class="form-grid grid-4">
+            <div class="form-group">
+              <label class="form-label" for="newAro">Aro *</label>
+              <select id="newAro" class="form-select">
+                <option value="13">13"</option>
+                <option value="14" selected>14"</option>
+                <option value="15">15"</option>
+                <option value="17">17"</option>
+                <option value="18">18"</option>
+                <option value="19">19"</option>
+                <option value="20">20"</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="newTala">Tala *</label>
+              <input type="text" id="newTala" class="form-input" placeholder="Ex: 5,5 ou 7,0" value="5,5">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="newPcd">Furação (PCD) *</label>
+              <input type="text" id="newPcd" class="form-input" placeholder="Ex: 4x100 ou 5x114,3" value="5x114,3">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="newOffset">Offset (ET)</label>
+              <input type="text" id="newOffset" class="form-input" placeholder="Ex: ET25" value="ET25">
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="newFinish">Acabamento / Cor</label>
+              <input type="text" id="newFinish" class="form-input" placeholder="Ex: Prata Diamantado, Black Piano">
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="newInitialStock">Estoque Inicial (Unidades) *</label>
+              <input type="number" id="newInitialStock" class="form-input" value="4" min="0">
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- Live Preview -->
+      <aside class="preview-column">
+        <div style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); display: flex; justify-content: space-between;">
+          <span>Prévia em Tempo Real</span>
+          <span style="color: var(--accent);">Aspecto 1:1</span>
+        </div>
+
+        <article class="wheel-card-preview">
+          <div class="preview-img-wrap">
+            <img
+              src="https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=600&q=80"
+              alt="Preview"
+              class="preview-img"
+              id="livePreviewImg"
+            >
+          </div>
+
+          <div class="preview-details">
+            <div class="preview-title" id="livePreviewTitle">Nome do Modelo</div>
+            <div class="preview-sku" id="livePreviewSku">SKU: ROD-00000</div>
+
+            <div class="spec-pills">
+              <span class="spec-pill" id="livePreviewAro">ARO 14</span>
+              <span class="spec-pill" id="livePreviewTala">TALA 5,5</span>
+              <span class="spec-pill" id="livePreviewPcd">5x114,3</span>
+            </div>
+
+            <div class="card-meta-row">
+              <div>
+                <div class="meta-label">Estoque</div>
+                <div class="meta-value-stock" id="livePreviewStock">4 unidades</div>
+              </div>
+              <div>
+                <div class="meta-label" style="text-align: right;">Marca</div>
+                <div class="meta-value-brand" id="livePreviewBrand">SCORRO</div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+          É assim que a equipe visualizará o card na busca rápida.
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- ==================== MODO 2: IMPORTAR PLANILHA ==================== -->
+    <div class="import-layout" id="importLayout">
+
+      <!-- Banner de Formato e Download do Modelo -->
+      <div class="sheet-format-banner">
+        <div>
+          <strong>Planilha no padrão suportado</strong>
+          <div style="color: var(--text-muted); font-size: 0.8125rem; margin-top: 2px;">
+            Colunas aceitas: <code>Modelo</code>, <code>SKU</code>, <code>Marca</code>, <code>Aro</code>, <code>Tala</code>, <code>Furacao</code>, <code>Offset</code>, <code>Estoque</code>.
+          </div>
+        </div>
+        <button class="btn-download-template" id="btnDownloadTemplate">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+          </svg>
+          Baixar Modelo CSV
+        </button>
+      </div>
+
+      <!-- Zona de Upload de Planilha -->
+      <div class="import-hero-box" id="sheetDropzone" onclick="document.getElementById('sheetFileInput').click()">
+        <input type="file" id="sheetFileInput" accept=".csv, .xlsx, .xls, text/csv" style="display: none;">
+        <svg class="import-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.6" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
+        <h2 class="import-title">Arraste sua planilha ou clique para selecionar</h2>
+        <p class="import-sub">Suporta arquivos CSV e Excel (.xlsx). O sistema lê as colunas automaticamente e monta uma prévia para confirmação.</p>
+      </div>
+
+      <!-- Prévia dos Dados da Planilha -->
+      <div class="sheet-preview-card" id="sheetPreviewCard">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h3 style="font-size: 1.05rem; font-weight: 800;">Itens Reconhecidos da Planilha</h3>
+            <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 2px;" id="sheetItemsCount">0 itens prontos para importar</p>
+          </div>
+          <button class="btn-secondary" id="btnClearSheet" style="padding: 6px 14px; font-size: 0.8125rem;">Remover Planilha</button>
+        </div>
+
+        <div class="sheet-table-wrapper">
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th>Modelo</th>
+                <th>SKU</th>
+                <th>Marca</th>
+                <th>Aro</th>
+                <th>Tala</th>
+                <th>Furação</th>
+                <th>Offset</th>
+                <th>Estoque</th>
+              </tr>
+            </thead>
+            <tbody id="sheetTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <svg width="20" height="20" fill="none" stroke="#22c55e" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+    </svg>
+    <span id="toastMsg">Operação realizada com sucesso!</span>
+  </div>
+
+  <script>
+    let currentMode = 'manual'; // 'manual' ou 'sheet'
+    let importedRows = [];
+
+    // Alternância de Modos
+    const btnModeManual = document.getElementById('btnModeManual');
+    const btnModeSheet = document.getElementById('btnModeSheet');
+    const manualLayout = document.getElementById('manualLayout');
+    const importLayout = document.getElementById('importLayout');
+    const btnMainActionText = document.getElementById('btnMainActionText');
+    const btnMainAction = document.getElementById('btnMainAction');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    btnModeManual.addEventListener('click', () => {
+      currentMode = 'manual';
+      btnModeManual.classList.add('active');
+      btnModeSheet.classList.remove('active');
+      manualLayout.style.display = 'grid';
+      importLayout.style.display = 'none';
+      btnMainActionText.textContent = 'Cadastrar Roda';
+    });
+
+    btnModeSheet.addEventListener('click', () => {
+      currentMode = 'sheet';
+      btnModeSheet.classList.add('active');
+      btnModeManual.classList.remove('active');
+      manualLayout.style.display = 'none';
+      importLayout.style.display = 'flex';
+      btnMainActionText.textContent = 'Confirmar Importação';
+    });
+
+    // Sincronização do Live Preview (Modo Manual)
+    const newModelName = document.getElementById('newModelName');
+    const newSku = document.getElementById('newSku');
+    const newBrand = document.getElementById('newBrand');
+    const newAro = document.getElementById('newAro');
+    const newTala = document.getElementById('newTala');
+    const newPcd = document.getElementById('newPcd');
+    const newInitialStock = document.getElementById('newInitialStock');
+
+    const livePreviewTitle = document.getElementById('livePreviewTitle');
+    const livePreviewSku = document.getElementById('livePreviewSku');
+    const livePreviewBrand = document.getElementById('livePreviewBrand');
+    const livePreviewAro = document.getElementById('livePreviewAro');
+    const livePreviewTala = document.getElementById('livePreviewTala');
+    const livePreviewPcd = document.getElementById('livePreviewPcd');
+    const livePreviewStock = document.getElementById('livePreviewStock');
+
+    function updateLivePreview() {
+      const name = newModelName.value.trim() || 'Nome do Modelo';
+      const sku = newSku.value.trim() || 'ROD-00000';
+      const brand = newBrand.value;
+      const aro = newAro.value;
+      const tala = newTala.value.trim() || '0';
+      const pcd = newPcd.value.trim() || '0x00';
+      const stock = parseInt(newInitialStock.value) || 0;
+
+      livePreviewTitle.textContent = name;
+      livePreviewSku.textContent = `SKU: ${sku}`;
+      livePreviewBrand.textContent = brand;
+      livePreviewAro.textContent = `ARO ${aro}`;
+      livePreviewTala.textContent = `TALA ${tala}`;
+      livePreviewPcd.textContent = pcd;
+      livePreviewStock.textContent = `${stock} unidades`;
+    }
+
+    [newModelName, newSku, newBrand, newAro, newTala, newPcd, newInitialStock].forEach(input => {
+      input.addEventListener('input', updateLivePreview);
+      input.addEventListener('change', updateLivePreview);
+    });
+
+    // Upload de Imagem Manual
+    const manualFileInput = document.getElementById('manualFileInput');
+    const uploadedPreviewImg = document.getElementById('uploadedPreviewImg');
+    const emptyPhotoPlaceholder = document.getElementById('emptyPhotoPlaceholder');
+    const livePreviewImg = document.getElementById('livePreviewImg');
+
+    manualFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          uploadedPreviewImg.src = event.target.result;
+          uploadedPreviewImg.style.display = 'block';
+          emptyPhotoPlaceholder.style.display = 'none';
+          livePreviewImg.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Importação de Planilha (CSV)
+    const sheetFileInput = document.getElementById('sheetFileInput');
+    const sheetPreviewCard = document.getElementById('sheetPreviewCard');
+    const sheetTableBody = document.getElementById('sheetTableBody');
+    const sheetItemsCount = document.getElementById('sheetItemsCount');
+    const btnClearSheet = document.getElementById('btnClearSheet');
+    const btnDownloadTemplate = document.getElementById('btnDownloadTemplate');
+
+    sheetFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target.result;
+        parseCSV(text);
+      };
+      reader.readAsText(file);
+    });
+
+    function parseCSV(csvText) {
+      const lines = csvText.trim().split(/\r?\n/);
+      if (lines.length < 2) {
+        alert('A planilha parece vazia ou sem cabeçalhos.');
+        return;
+      }
+
+      importedRows = [];
+      const headers = lines[0].split(/[;,]/).map(h => h.trim().toLowerCase());
+
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(/[;,]/).map(c => c.trim());
+        if (cols.length >= 4) {
+          importedRows.push({
+            modelo: cols[0] || 'Sem Nome',
+            sku: cols[1] || 'SEM-SKU',
+            marca: cols[2] || 'SCORRO',
+            aro: cols[3] || '14',
+            tala: cols[4] || '5,5',
+            furacao: cols[5] || '4x100',
+            offset: cols[6] || 'ET35',
+            estoque: cols[7] || '4'
+          });
+        }
+      }
+
+      renderSheetPreview();
+    }
+
+    function renderSheetPreview() {
+      sheetTableBody.innerHTML = importedRows.map(row => `
+        <tr>
+          <td><strong>${row.modelo}</strong></td>
+          <td><code>${row.sku}</code></td>
+          <td>${row.marca}</td>
+          <td>Aro ${row.aro}"</td>
+          <td>${row.tala}"</td>
+          <td>${row.furacao}</td>
+          <td>${row.offset}</td>
+          <td><strong>${row.estoque} un.</strong></td>
+        </tr>
+      `).join('');
+
+      sheetItemsCount.textContent = `${importedRows.length} rodas prontas para entrar no catálogo`;
+      sheetPreviewCard.style.display = 'block';
+    }
+
+    btnClearSheet.addEventListener('click', () => {
+      importedRows = [];
+      sheetFileInput.value = '';
+      sheetPreviewCard.style.display = 'none';
+    });
+
+    // Baixar Modelo de Planilha
+    btnDownloadTemplate.addEventListener('click', () => {
+      const csvContent = "Modelo,SKU,Marca,Aro,Tala,Furacao,Offset,Estoque\n" +
+        "Scorro Opala Tijolinho,ROD-00125,SCORRO,14,5.5,5x114.3,ET25,12\n" +
+        "Kromma K-48 Sport Diamond,ROD-00210,KROMMA,17,7.0,4x100,ET40,8\n" +
+        "Enkei RPF1 Motorsport,ROD-00512,ENKEI,15,7.0,4x100,ET35,6";
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'modelo_importacao_rodas.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    // Ação Principal (Salvar Manual ou Confirmar Planilha)
+    btnMainAction.addEventListener('click', () => {
+      if (currentMode === 'manual') {
+        if (!newModelName.value.trim() || !newSku.value.trim()) {
+          alert('Por favor, informe pelo menos o Nome do Modelo e o SKU.');
+          return;
+        }
+        toastMsg.textContent = `Roda "${newModelName.value}" cadastrada com sucesso!`;
+      } else {
+        if (importedRows.length === 0) {
+          alert('Por favor, selecione uma planilha antes de confirmar.');
+          return;
+        }
+        toastMsg.textContent = `${importedRows.length} rodas importadas com sucesso!`;
+      }
+
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    });
+
+    document.getElementById('btnCancel').addEventListener('click', () => {
+      if (confirm('Deseja cancelar o cadastro?')) {
+        location.reload();
+      }
+    });
+
+    updateLivePreview();
+  </script>
+</body>
+</html>

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo Visual de Rodas Automotivas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --img-bg: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --success-bg: #ecfdf5;
+      --success-text: #047857;
+      --warning-bg: #fffbeb;
+      --warning-text: #b45309;
+      --danger-bg: #fef2f2;
+      --danger-text: #b91c1c;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      padding: 24px;
+      line-height: 1.4;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Topo: Busca & Controles */
+    header {
+      margin-bottom: 24px;
+    }
+
+    .search-bar-wrapper {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 18px 24px 18px 56px;
+      font-size: 1.125rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      background-color: #ffffff;
+      color: var(--text-main);
+      outline: none;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Linha de filtros e alternância de visualização */
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .quick-filters {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-chip {
+      padding: 8px 14px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      background: #ffffff;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .filter-chip:hover {
+      border-color: #cbd5e1;
+      color: var(--text-main);
+    }
+
+    .filter-chip.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .view-toggle {
+      display: inline-flex;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .toggle-btn.active {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .results-count {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 14px;
+    }
+
+    /* Grade de Rodas (Visualização Padrão) */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+      margin-top: 16px;
+    }
+
+    @media (min-width: 1024px) {
+      .catalog-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 1440px) {
+      .catalog-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    .wheel-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 4px rgba(15, 23, 42, 0.03);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .wheel-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+      border-color: #cbd5e1;
+    }
+
+    /* Fotografia: ~65-70% da área do card, quadrada, sem cortes */
+    .wheel-img-container {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: var(--img-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      position: relative;
+    }
+
+    .wheel-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.12));
+      transition: transform 0.2s ease;
+    }
+
+    .wheel-card:hover .wheel-img {
+      transform: scale(1.03);
+    }
+
+    .stock-badge-floating {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .stock-ok {
+      background: var(--success-bg);
+      color: var(--success-text);
+      border: 1px solid #a7f3d0;
+    }
+
+    .stock-low {
+      background: var(--warning-bg);
+      color: var(--warning-text);
+      border: 1px solid #fde68a;
+    }
+
+    .stock-out {
+      background: var(--danger-bg);
+      color: var(--danger-text);
+      border: 1px solid #fecaca;
+    }
+
+    .card-body {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-grow: 1;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .spec-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 7px;
+      background: #f1f5f9;
+      color: #334155;
+      border-radius: 4px;
+    }
+
+    .tag.highlight {
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 8px;
+      border-top: 1px solid #f1f5f9;
+      font-size: 0.75rem;
+    }
+
+    .sku-label {
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+
+    .stock-text {
+      font-weight: 600;
+    }
+
+    /* Visualização em Tabela (Opcional) */
+    .catalog-table-wrapper {
+      display: none;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    table.catalog-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    table.catalog-table th,
+    table.catalog-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    table.catalog-table th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    table.catalog-table tbody tr {
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+
+    table.catalog-table tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    .table-thumb {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      background: var(--img-bg);
+      border-radius: 6px;
+      padding: 4px;
+    }
+
+    /* Modal de Detalhes Rápidos */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(3px);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: var(--radius);
+      max-width: 680px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .modal-img-col {
+      background: var(--img-bg);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15));
+    }
+
+    .modal-info-col {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-close {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-top: 4px;
+      margin-bottom: 8px;
+    }
+
+    .modal-spec-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+      font-size: 0.875rem;
+    }
+
+    .modal-spec-item {
+      background: #f8fafc;
+      padding: 8px 12px;
+      border-radius: 6px;
+    }
+
+    .modal-spec-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .modal-spec-val {
+      font-weight: 600;
+      color: var(--text-main);
+      margin-top: 2px;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      background: #ffffff;
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <!-- Barra de Pesquisa Ampla -->
+      <div class="search-bar-wrapper">
+        <svg class="search-icon" width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="Busque por marca, modelo, aro, furação ou SKU... (ex: Scorro Opala, 14x5,5, 5x114,3, Kromma 17)"
+          autofocus
+        >
+      </div>
+
+      <!-- Filtros Rápidos + Alternância Grid/Tabela -->
+      <div class="controls-row">
+        <div class="quick-filters" id="quickFilters">
+          <button class="filter-chip active" data-filter="all">Todos</button>
+          <button class="filter-chip" data-filter="aro:14">Aro 14"</button>
+          <button class="filter-chip" data-filter="aro:15">Aro 15"</button>
+          <button class="filter-chip" data-filter="aro:17">Aro 17"</button>
+          <button class="filter-chip" data-filter="furacao:4x100">4x100</button>
+          <button class="filter-chip" data-filter="furacao:5x114,3">5x114,3</button>
+          <button class="filter-chip" data-filter="stock:in">Apenas em Estoque</button>
+        </div>
+
+        <div class="view-toggle">
+          <button class="toggle-btn active" id="btnViewGrid">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
+            </svg>
+            Grade
+          </button>
+          <button class="toggle-btn" id="btnViewTable">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm15 2h-4v3h4V4zm0 4h-4v3h4V8zm0 4h-4v3h3a1 1 0 0 0 1-1v-2zm-5 3v-3H6v3h4zm-5 0v-3H1v2a1 1 0 0 0 1 1h3zm-4-4h4V8H1v3zm0-4h4V4H1v3zm5-3v3h4V4H6zm4 4H6v3h4V8z"/>
+            </svg>
+            Tabela
+          </button>
+        </div>
+      </div>
+
+      <div class="results-count" id="resultsCount">Carregando catálogo...</div>
+    </header>
+
+    <!-- Visualização em Grade -->
+    <main class="catalog-grid" id="catalogGrid"></main>
+
+    <!-- Visualização em Tabela -->
+    <div class="catalog-table-wrapper" id="catalogTableWrapper">
+      <table class="catalog-table">
+        <thead>
+          <tr>
+            <th style="width: 80px;">Roda</th>
+            <th>Produto / Modelo</th>
+            <th>Marca</th>
+            <th>Aro x Tala</th>
+            <th>Furação</th>
+            <th>Offset</th>
+            <th>SKU</th>
+            <th>Estoque</th>
+          </tr>
+        </thead>
+        <tbody id="catalogTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de Detalhes -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal-card">
+      <div class="modal-img-col">
+        <img src="" alt="" class="modal-img" id="modalImg">
+      </div>
+      <div class="modal-info-col">
+        <button class="modal-close" id="modalClose">&times;</button>
+        <span class="sku-label" id="modalSku">SKU: --</span>
+        <h2 class="modal-title" id="modalTitle">Nome da Roda</h2>
+        <div id="modalStockBadge" class="stock-badge-floating" style="position: static; display: inline-block; margin-bottom: 12px; width: fit-content;"></div>
+
+        <div class="modal-spec-grid">
+          <div class="modal-spec-item">
+            <div class="modal-spec-label">Marca</div>
+            <div class="modal-spec-val" id="modalBrand">--</div>
+          </div>
+          <div class="modal-spec-item">
+            <div class="modal-spec-label">Aro e Tala</div>
+            <div class="modal-spec-val" id="modalDimensions">--</div>
+          </div>
+          <div class="modal-spec-item">
+            <div class="modal-spec-label">Furação</div>
+            <div class="modal-spec-val" id="modalPcd">--</div>
+          </div>
+          <div class="modal-spec-item">
+            <div class="modal-spec-label">Offset (ET)</div>
+            <div class="modal-spec-val" id="modalOffset">--</div>
+          </div>
+          <div class="modal-spec-item">
+            <div class="modal-spec-label">Acabamento</div>
+            <div class="modal-spec-val" id="modalFinish">--</div>
+          </div>
+          <div class="modal-spec-item">
+            <div class="modal-spec-label">Estoque Total</div>
+            <div class="modal-spec-val" id="modalStockNum">--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Base de dados de exemplo com os modelos citados
+    const WHEELS_DATA = [
+      {
+        id: 1,
+        name: "Scorro Opala SS Clássica",
+        brand: "Scorro",
+        aro: 14,
+        tala: "5,5",
+        furacao: "5x114,3",
+        offset: "ET25",
+        sku: "SCO-OPA-1455",
+        acabamento: "Prata Diamantada",
+        stock: 16,
+        image: "https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 2,
+        name: "Scorro S-215 Rallye",
+        brand: "Scorro",
+        aro: 15,
+        tala: "6,0",
+        furacao: "4x100",
+        offset: "ET38",
+        sku: "SCO-215-1560",
+        acabamento: "Grafite Fosco",
+        stock: 4,
+        image: "https://images.unsplash.com/photo-1580274455191-1c62238fa333?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 3,
+        name: "Kromma 17 K-48 Sport",
+        brand: "Kromma",
+        aro: 17,
+        tala: "7,0",
+        furacao: "4x100",
+        offset: "ET40",
+        sku: "KRO-48-1770",
+        acabamento: "Black Piano Diamantado",
+        stock: 8,
+        image: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 4,
+        name: "Kromma K-55 Concave",
+        brand: "Kromma",
+        aro: 17,
+        tala: "7,5",
+        furacao: "5x114,3",
+        offset: "ET35",
+        sku: "KRO-55-1775",
+        acabamento: "Bronze Acetinado",
+        stock: 2,
+        image: "https://images.unsplash.com/photo-1611821064430-0d40291d0f0b?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 5,
+        name: "Tsw Nurburgring Track",
+        brand: "TSW",
+        aro: 18,
+        tala: "8,0",
+        furacao: "5x114,3",
+        offset: "ET42",
+        sku: "TSW-NUR-1880",
+        acabamento: "Gunmetal",
+        stock: 12,
+        image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 6,
+        name: "Volcano Santa Monica",
+        brand: "Volcano",
+        aro: 17,
+        tala: "6,0",
+        furacao: "4x100",
+        offset: "ET36",
+        sku: "VOL-STM-1760",
+        acabamento: "Prata Brilhante",
+        stock: 0,
+        image: "https://images.unsplash.com/photo-1589148938909-4d241c91ee52?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 7,
+        name: "Scorro S-182 Cruz de Malta",
+        brand: "Scorro",
+        aro: 14,
+        tala: "5,5",
+        furacao: "4x100",
+        offset: "ET32",
+        sku: "SCO-MAL-1455",
+        acabamento: "Fundo Preto / Frente Diamantada",
+        stock: 24,
+        image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 8,
+        name: "Enkei RPF1 Motorsport",
+        brand: "Enkei",
+        aro: 15,
+        tala: "7,0",
+        furacao: "4x100",
+        offset: "ET35",
+        sku: "ENK-RPF-1570",
+        acabamento: "Silver F1",
+        stock: 6,
+        image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80"
+      }
+    ];
+
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    const searchInput = document.getElementById('searchInput');
+    const quickFilters = document.getElementById('quickFilters');
+    const catalogGrid = document.getElementById('catalogGrid');
+    const catalogTableBody = document.getElementById('catalogTableBody');
+    const resultsCount = document.getElementById('resultsCount');
+
+    const btnViewGrid = document.getElementById('btnViewGrid');
+    const btnViewTable = document.getElementById('btnViewTable');
+    const catalogTableWrapper = document.getElementById('catalogTableWrapper');
+
+    const productModal = document.getElementById('productModal');
+    const modalClose = document.getElementById('modalClose');
+
+    // Retorna badge e estilo de estoque
+    function getStockBadge(stock) {
+      if (stock === 0) {
+        return `<span class="stock-badge-floating stock-out">Sem Estoque</span>`;
+      }
+      if (stock <= 3) {
+        return `<span class="stock-badge-floating stock-low">${stock} un. (Baixo)</span>`;
+      }
+      return `<span class="stock-badge-floating stock-ok">${stock} un. em estoque</span>`;
+    }
+
+    // Filtro inteligente multi-termo (combinação de palavras como "Scorro Opala 14x5,5")
+    function matchesSearch(wheel, query) {
+      if (!query.trim()) return true;
+
+      // Unifica todos os atributos relevantes da roda em um texto pesquisável
+      const searchableText = `
+        ${wheel.name}
+        ${wheel.brand}
+        ${wheel.aro} aro${wheel.aro}
+        ${wheel.aro}x${wheel.tala}
+        ${wheel.tala}
+        ${wheel.furacao}
+        ${wheel.offset}
+        ${wheel.sku}
+        ${wheel.acabamento}
+      `.toLowerCase();
+
+      // Divide por espaços: todos os termos digitados precisam estar presentes
+      const terms = query.toLowerCase().trim().split(/\s+/);
+      return terms.every(term => searchableText.includes(term));
+    }
+
+    // Filtro rápido de chips
+    function matchesQuickFilter(wheel, filter) {
+      if (filter === 'all') return true;
+      if (filter === 'stock:in') return wheel.stock > 0;
+      if (filter.startsWith('aro:')) {
+        const aro = parseInt(filter.split(':')[1]);
+        return wheel.aro === aro;
+      }
+      if (filter.startsWith('furacao:')) {
+        const pcd = filter.split(':')[1];
+        return wheel.furacao.toLowerCase() === pcd.toLowerCase();
+      }
+      return true;
+    }
+
+    // Renderização
+    function renderCatalog() {
+      const filtered = WHEELS_DATA.filter(w => matchesQuickFilter(w, currentFilter) && matchesSearch(w, searchQuery));
+
+      resultsCount.textContent = `${filtered.length} produto${filtered.length === 1 ? '' : 's'} encontrado${filtered.length === 1 ? '' : 's'}`;
+
+      if (filtered.length === 0) {
+        const emptyHtml = `<div class="empty-state">
+          <h3>Nenhuma roda encontrada</h3>
+          <p style="margin-top: 6px;">Tente buscar por termos mais genéricos, aro ou furação.</p>
+        </div>`;
+        catalogGrid.innerHTML = emptyHtml;
+        catalogTableBody.innerHTML = `<tr><td colspan="8" style="text-align: center; padding: 40px;">Nenhuma roda encontrada.</td></tr>`;
+        return;
+      }
+
+      // Renderiza Cards
+      catalogGrid.innerHTML = filtered.map(wheel => `
+        <article class="wheel-card" onclick="openDetails(${wheel.id})">
+          <div class="wheel-img-container">
+            ${getStockBadge(wheel.stock)}
+            <img src="${wheel.image}" alt="${wheel.name}" class="wheel-img" loading="lazy">
+          </div>
+          <div class="card-body">
+            <h3 class="card-title" title="${wheel.name}">${wheel.name}</h3>
+            <div class="spec-tags">
+              <span class="tag highlight">${wheel.brand}</span>
+              <span class="tag">Aro ${wheel.aro}"</span>
+              <span class="tag">Tala ${wheel.tala}"</span>
+              <span class="tag">${wheel.furacao}</span>
+            </div>
+            <div class="card-footer">
+              <span class="sku-label">${wheel.sku}</span>
+              <span class="stock-text" style="color: ${wheel.stock > 0 ? 'var(--success-text)' : 'var(--danger-text)'}">
+                ${wheel.stock > 0 ? `${wheel.stock} un.` : 'Esgotado'}
+              </span>
+            </div>
+          </div>
+        </article>
+      `).join('');
+
+      // Renderiza Tabela
+      catalogTableBody.innerHTML = filtered.map(wheel => `
+        <tr onclick="openDetails(${wheel.id})">
+          <td><img src="${wheel.image}" alt="" class="table-thumb"></td>
+          <td><strong>${wheel.name}</strong></td>
+          <td>${wheel.brand}</td>
+          <td>${wheel.aro}" x ${wheel.tala}"</td>
+          <td><span class="tag">${wheel.furacao}</span></td>
+          <td>${wheel.offset}</td>
+          <td class="sku-label">${wheel.sku}</td>
+          <td>
+            <span style="font-weight: 600; color: ${wheel.stock > 0 ? 'var(--success-text)' : 'var(--danger-text)'}">
+              ${wheel.stock} un.
+            </span>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Modal de Detalhes
+    window.openDetails = function(id) {
+      const wheel = WHEELS_DATA.find(w => w.id === id);
+      if (!wheel) return;
+
+      document.getElementById('modalImg').src = wheel.image;
+      document.getElementById('modalTitle').textContent = wheel.name;
+      document.getElementById('modalSku').textContent = `SKU: ${wheel.sku}`;
+      document.getElementById('modalBrand').textContent = wheel.brand;
+      document.getElementById('modalDimensions').textContent = `Aro ${wheel.aro}" | Tala ${wheel.tala}"`;
+      document.getElementById('modalPcd').textContent = wheel.furacao;
+      document.getElementById('modalOffset').textContent = wheel.offset;
+      document.getElementById('modalFinish').textContent = wheel.acabamento;
+      document.getElementById('modalStockNum').textContent = `${wheel.stock} unidades disponíveis`;
+
+      const badgeElem = document.getElementById('modalStockBadge');
+      badgeElem.innerHTML = getStockBadge(wheel.stock);
+
+      productModal.classList.add('active');
+    };
+
+    modalClose.addEventListener('click', () => productModal.classList.remove('active'));
+    productModal.addEventListener('click', (e) => {
+      if (e.target === productModal) productModal.classList.remove('active');
+    });
+
+    // Eventos de Busca
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderCatalog();
+    });
+
+    // Eventos de Chips de Filtro
+    quickFilters.addEventListener('click', (e) => {
+      if (e.target.classList.contains('filter-chip')) {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        e.target.classList.add('active');
+        currentFilter = e.target.dataset.filter;
+        renderCatalog();
+      }
+    });
+
+    // Alternância Grid / Table
+    btnViewGrid.addEventListener('click', () => {
+      btnViewGrid.classList.add('active');
+      btnViewTable.classList.remove('active');
+      catalogGrid.style.display = 'grid';
+      catalogTableWrapper.style.display = 'none';
+    });
+
+    btnViewTable.addEventListener('click', () => {
+      btnViewTable.classList.add('active');
+      btnViewGrid.classList.remove('active');
+      catalogGrid.style.display = 'none';
+      catalogTableWrapper.style.display = 'block';
+    });
+
+    // Tecla ESC fecha modal
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') productModal.classList.remove('active');
+    });
+
+    // Inicialização
+    renderCatalog();
+  </script>
+</body>
+</html>

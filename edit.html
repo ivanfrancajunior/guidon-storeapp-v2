@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Roda - Catálogo Automotivo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --border-focus: #2563eb;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --primary: #0f172a;
+      --primary-hover: #1e293b;
+      --accent: #2563eb;
+      --accent-light: #eff6ff;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --success: #16a34a;
+      --radius-card: 16px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.4;
+      padding-bottom: 60px;
+    }
+
+    /* Topbar */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-pill);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+
+    .btn-back:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .topbar-title {
+      font-size: 1.125rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .topbar-sku-tag {
+      font-size: 0.75rem;
+      font-family: monospace;
+      padding: 3px 8px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      color: var(--text-muted);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      padding: 10px 18px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-primary {
+      padding: 10px 22px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: var(--primary);
+      color: #ffffff;
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    /* Container Principal */
+    .edit-container {
+      max-width: 1440px;
+      margin: 32px auto 0;
+      padding: 0 36px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* Coluna de Formulários */
+    .form-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .section-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-desc {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    /* Grid de Campos */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .form-grid.grid-4 {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.col-span-2 {
+      grid-column: span 2;
+    }
+
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.875rem;
+      color: var(--text-main);
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    /* Upload de Fotos com Aspecto Quadrado */
+    .photo-manager {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .main-photo-frame {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #f8fafc;
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .main-photo-img {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.12));
+    }
+
+    .upload-zone {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .dropzone-box {
+      border: 1.5px dashed var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      background: #fafafa;
+      transition: all 0.2s;
+    }
+
+    .dropzone-box:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .dropzone-text {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-top: 6px;
+    }
+
+    .dropzone-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .photo-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-photo-action {
+      padding: 6px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-photo-action:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-photo-action.danger {
+      color: var(--danger);
+      border-color: #fecaca;
+    }
+
+    .btn-photo-action.danger:hover {
+      background: var(--danger-light);
+    }
+
+    /* Bloco de Estoque com Contador */
+    .stock-counter-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-counter {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+      font-size: 1.25rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-main);
+      transition: all 0.15s;
+    }
+
+    .btn-counter:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .input-counter {
+      text-align: center;
+      font-size: 1.125rem;
+      font-weight: 700;
+    }
+
+    /* Coluna Direita: Live Preview */
+    .preview-column {
+      position: sticky;
+      top: 92px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .preview-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* O mesmo Card do Catálogo com Aspecto Quadrado 1:1 */
+    .wheel-card-preview {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    .preview-img-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      border-bottom: 1px solid #f1f5f9;
+      position: relative;
+    }
+
+    .preview-img {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
+    }
+
+    .preview-details {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preview-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .preview-sku {
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: var(--text-muted);
+    }
+
+    .spec-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 4px 0 8px;
+    }
+
+    .spec-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      background: #f1f5f9;
+      color: #1e293b;
+      border-radius: var(--radius-pill);
+    }
+
+    .card-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 10px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .meta-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .meta-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .meta-value-stock {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .meta-value-brand {
+      font-size: 0.875rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-main);
+      text-align: right;
+    }
+
+    /* Notificação Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de Ações Superior -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="btn-back" onclick="alert('Voltar ao Catálogo')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Voltar
+      </button>
+      <div>
+        <h1 class="topbar-title" id="topbarTitle">Editar Produto</h1>
+      </div>
+      <span class="topbar-sku-tag" id="topbarSku">SKU: ROD-00125</span>
+    </div>
+
+    <div class="topbar-actions">
+      <button class="btn-secondary" onclick="alert('Alterações descartadas.')">Descartar</button>
+      <button class="btn-primary" id="btnSave">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        Salvar Alterações
+      </button>
+    </div>
+  </header>
+
+  <!-- Layout de Edição -->
+  <main class="edit-container">
+
+    <!-- Formulários -->
+    <div class="form-column">
+
+      <!-- Seção 1: Fotografia do Produto -->
+      <section class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Fotografia da Roda</h2>
+            <p class="section-desc">A imagem principal é exibida com enquadramento quadrado 1:1 no catálogo.</p>
+          </div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Proporção: 1:1 Quadrada</span>
+        </div>
+
+        <div class="photo-manager">
+          <div class="main-photo-frame">
+            <img
+              src="https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=600&q=80"
+              alt="Roda"
+              class="main-photo-img"
+              id="editMainPhoto"
+            >
+          </div>
+
+          <div class="upload-zone">
+            <div class="dropzone-box" onclick="document.getElementById('fileInput').click()">
+              <input type="file" id="fileInput" accept="image/*" style="display: none;">
+              <svg width="28" height="28" fill="none" stroke="#64748b" viewBox="0 0 24 24" style="margin: 0 auto;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <div class="dropzone-text">Clique para enviar nova imagem</div>
+              <div class="dropzone-sub">PNG ou JPG com fundo branco ou transparente</div>
+            </div>
+
+            <div class="photo-actions">
+              <button class="btn-photo-action" onclick="document.getElementById('fileInput').click()">Trocar Foto</button>
+              <button class="btn-photo-action" onclick="alert('Recurso: Fundo removido automaticamente.')">Remover Fundo</button>
+              <button class="btn-photo-action danger" onclick="alert('Imagem removida.')">Excluir</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção 2: Identificação Básica -->
+      <section class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Identificação do Produto</h2>
+            <p class="section-desc">Nome do modelo, código de referência e fabricante.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group col-span-2">
+            <label class="form-label" for="inputName">Nome do Modelo</label>
+            <input type="text" id="inputName" class="form-input" value="Scorro Opala Tijolinho">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inputSku">Código SKU</label>
+            <input type="text" id="inputSku" class="form-input" value="ROD-00125">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="selectBrand">Marca / Fabricante</label>
+            <select id="selectBrand" class="form-select">
+              <option value="SCORRO" selected>SCORRO</option>
+              <option value="KROMMA">KROMMA</option>
+              <option value="TSW">TSW</option>
+              <option value="VOLCANO">VOLCANO</option>
+              <option value="ENKEI">ENKEI</option>
+              <option value="BBS">BBS</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção 3: Especificações Técnicas da Roda -->
+      <section class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Especificações e Medidas</h2>
+            <p class="section-desc">Essas informações alimentam os filtros de busca rápida.</p>
+          </div>
+        </div>
+
+        <div class="form-grid grid-4">
+          <div class="form-group">
+            <label class="form-label" for="inputAro">Aro (Diâmetro)</label>
+            <select id="inputAro" class="form-select">
+              <option value="13">13"</option>
+              <option value="14" selected>14"</option>
+              <option value="15">15"</option>
+              <option value="17">17"</option>
+              <option value="18">18"</option>
+              <option value="20">20"</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inputTala">Tala (Largura)</label>
+            <input type="text" id="inputTala" class="form-input" value="5,5">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inputPcd">Furação (PCD)</label>
+            <input type="text" id="inputPcd" class="form-input" value="5x114,3" placeholder="ex: 4x100, 5x114,3">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inputOffset">Offset (ET)</label>
+            <input type="text" id="inputOffset" class="form-input" value="ET25">
+          </div>
+
+          <div class="form-group col-span-2">
+            <label class="form-label" for="inputFinish">Acabamento / Cor</label>
+            <input type="text" id="inputFinish" class="form-input" value="Prata Diamantado">
+          </div>
+
+          <div class="form-group col-span-2">
+            <label class="form-label" for="inputMaterial">Material de Fabricação</label>
+            <select id="inputMaterial" class="form-select">
+              <option value="Liga Leve (Alumínio)" selected>Liga Leve (Alumínio)</option>
+              <option value="Aço Estampado">Aço Estampado</option>
+              <option value="Forjada (Forged)">Forjada (Forged)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seção 4: Estoque e Disponibilidade -->
+      <section class="section-card">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Controle de Estoque</h2>
+            <p class="section-desc">Defina a quantidade de unidades físicas disponíveis para pronta entrega.</p>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Saldo em Estoque (Unidades)</label>
+            <div class="stock-counter-wrap">
+              <button class="btn-counter" id="btnStockMinus">&minus;</button>
+              <input type="number" id="inputStock" class="form-input input-counter" value="12" min="0">
+              <button class="btn-counter" id="btnStockPlus">&plus;</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inputMinStock">Estoque Mínimo (Alerta)</label>
+            <input type="number" id="inputMinStock" class="form-input" value="4" min="0">
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Coluna Direita: Live Preview do Card -->
+    <aside class="preview-column">
+      <div class="preview-header">
+        <span>Prévia no Catálogo</span>
+        <span style="color: var(--accent); font-weight: 700;">Ao Vivo</span>
+      </div>
+
+      <!-- Card idêntico ao do catálogo -->
+      <article class="wheel-card-preview">
+        <div class="preview-img-wrap">
+          <img
+            src="https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=600&q=80"
+            alt="Preview"
+            class="preview-img"
+            id="cardPreviewImg"
+          >
+        </div>
+
+        <div class="preview-details">
+          <div class="preview-title" id="cardPreviewTitle">Scorro Opala Tijolinho</div>
+          <div class="preview-sku" id="cardPreviewSku">SKU: ROD-00125</div>
+
+          <div class="spec-pills">
+            <span class="spec-pill" id="cardPreviewAro">ARO 14</span>
+            <span class="spec-pill" id="cardPreviewTala">TALA 5,5</span>
+            <span class="spec-pill" id="cardPreviewPcd">5x114,3</span>
+          </div>
+
+          <div class="card-meta-row">
+            <div class="meta-block">
+              <span class="meta-label">Estoque</span>
+              <span class="meta-value-stock" id="cardPreviewStock">12 unidades</span>
+            </div>
+            <div class="meta-block">
+              <span class="meta-label">Marca</span>
+              <span class="meta-value-brand" id="cardPreviewBrand">SCORRO</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div style="font-size: 0.75rem; color: var(--text-muted); text-align: center; margin-top: 4px;">
+        As alterações no formulário refletem instantaneamente no card acima.
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Toast de Sucesso -->
+  <div class="toast" id="toast">
+    <svg width="20" height="20" fill="none" stroke="#22c55e" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+    </svg>
+    <span>Alterações salvas com sucesso!</span>
+  </div>
+
+  <script>
+    // Elementos do formulário
+    const inputName = document.getElementById('inputName');
+    const inputSku = document.getElementById('inputSku');
+    const selectBrand = document.getElementById('selectBrand');
+    const inputAro = document.getElementById('inputAro');
+    const inputTala = document.getElementById('inputTala');
+    const inputPcd = document.getElementById('inputPcd');
+    const inputStock = document.getElementById('inputStock');
+    const fileInput = document.getElementById('fileInput');
+
+    const btnStockMinus = document.getElementById('btnStockMinus');
+    const btnStockPlus = document.getElementById('btnStockPlus');
+    const btnSave = document.getElementById('btnSave');
+    const toast = document.getElementById('toast');
+
+    // Elementos do Live Preview
+    const cardPreviewTitle = document.getElementById('cardPreviewTitle');
+    const cardPreviewSku = document.getElementById('cardPreviewSku');
+    const cardPreviewAro = document.getElementById('cardPreviewAro');
+    const cardPreviewTala = document.getElementById('cardPreviewTala');
+    const cardPreviewPcd = document.getElementById('cardPreviewPcd');
+    const cardPreviewStock = document.getElementById('cardPreviewStock');
+    const cardPreviewBrand = document.getElementById('cardPreviewBrand');
+    const cardPreviewImg = document.getElementById('cardPreviewImg');
+    const editMainPhoto = document.getElementById('editMainPhoto');
+
+    const topbarTitle = document.getElementById('topbarTitle');
+    const topbarSku = document.getElementById('topbarSku');
+
+    // Atualiza o preview ao vivo
+    function updateLivePreview() {
+      const name = inputName.value.trim() || 'Nome do Modelo';
+      const sku = inputSku.value.trim() || 'SKU-000';
+      const brand = selectBrand.value;
+      const aro = inputAro.value;
+      const tala = inputTala.value.trim() || '0';
+      const pcd = inputPcd.value.trim() || '0x00';
+      const stock = parseInt(inputStock.value) || 0;
+
+      cardPreviewTitle.textContent = name;
+      cardPreviewSku.textContent = `SKU: ${sku}`;
+      cardPreviewBrand.textContent = brand;
+      cardPreviewAro.textContent = `ARO ${aro}`;
+      cardPreviewTala.textContent = `TALA ${tala}`;
+      cardPreviewPcd.textContent = pcd;
+
+      topbarTitle.textContent = name;
+      topbarSku.textContent = `SKU: ${sku}`;
+
+      if (stock === 0) {
+        cardPreviewStock.textContent = 'Sem estoque';
+        cardPreviewStock.style.color = 'var(--danger)';
+      } else if (stock <= 3) {
+        cardPreviewStock.textContent = `${stock} un. (Baixo)`;
+        cardPreviewStock.style.color = 'var(--warning)';
+      } else {
+        cardPreviewStock.textContent = `${stock} unidades`;
+        cardPreviewStock.style.color = 'var(--text-main)';
+      }
+    }
+
+    // Ouvintes de input para sincronização em tempo real
+    inputName.addEventListener('input', updateLivePreview);
+    inputSku.addEventListener('input', updateLivePreview);
+    selectBrand.addEventListener('change', updateLivePreview);
+    inputAro.addEventListener('change', updateLivePreview);
+    inputTala.addEventListener('input', updateLivePreview);
+    inputPcd.addEventListener('input', updateLivePreview);
+    inputStock.addEventListener('input', updateLivePreview);
+
+    // Ajuste de Estoque (+ e -)
+    btnStockMinus.addEventListener('click', () => {
+      let val = parseInt(inputStock.value) || 0;
+      if (val > 0) {
+        inputStock.value = val - 1;
+        updateLivePreview();
+      }
+    });
+
+    btnStockPlus.addEventListener('click', () => {
+      let val = parseInt(inputStock.value) || 0;
+      inputStock.value = val + 1;
+      updateLivePreview();
+    });
+
+    // Simulação de troca de imagem local
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          editMainPhoto.src = event.target.result;
+          cardPreviewImg.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Salvar
+    btnSave.addEventListener('click', () => {
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    });
+
+    // Inicialização
+    updateLivePreview();
+  </script>
+</body>
+</html>

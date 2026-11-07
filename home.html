@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo de Rodas Automotivas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --sidebar-bg: #ffffff;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-subtle: #94a3b8;
+      --primary: #0f172a;
+      --primary-hover: #1e293b;
+      --accent-blue: #2563eb;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --radius-card: 18px;
+      --radius-pill: 9999px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.4;
+      min-height: 100vh;
+    }
+
+    /* Topo do Catálogo */
+    .catalogue-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 36px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-sub {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .header-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .header-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .btn-close {
+      border: 1px solid var(--border);
+      background: #ffffff;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .btn-close:hover {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    /* Layout Principal: Sidebar + Grid */
+    .catalogue-layout {
+      display: flex;
+      max-width: 1720px;
+      margin: 0 auto;
+      padding: 28px 36px;
+      gap: 36px;
+    }
+
+    /* Menu Lateral de Filtros */
+    .sidebar {
+      width: 290px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .search-block label,
+    .filter-section-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 16px 12px 42px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.875rem;
+      color: var(--text-main);
+      background: #ffffff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-subtle);
+      pointer-events: none;
+    }
+
+    .filters-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .btn-clear-filters {
+      background: none;
+      border: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .btn-clear-filters:hover {
+      color: var(--accent-blue);
+    }
+
+    .filter-group {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .filter-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      color: var(--text-main);
+      cursor: pointer;
+      user-select: none;
+      padding: 2px 0;
+    }
+
+    .filter-option input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    .filter-label-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .filter-count {
+      font-size: 0.8125rem;
+      color: var(--text-subtle);
+      font-weight: 500;
+    }
+
+    /* Conteúdo Principal */
+    .main-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .content-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .showing-text {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .sort-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sort-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .sort-select {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 0.875rem;
+      color: var(--text-main);
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Grade de Rodas */
+    .wheels-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 22px;
+    }
+
+    /* Card de Produto */
+    .wheel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative;
+    }
+
+    .wheel-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+      border-color: #cbd5e1;
+    }
+
+    /* Container Quadrado Perfeito (1:1) */
+    .card-img-wrap {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      height: auto;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      position: relative;
+      border-bottom: 1px solid #f1f5f9;
+      overflow: hidden;
+    }
+
+    /* Imagem Quadrada (1:1) com Contain para Nunca Cortar a Roda */
+    .card-img {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12));
+      transition: transform 0.25s ease;
+    }
+
+    .wheel-card:hover .card-img {
+      transform: scale(1.04);
+    }
+
+    .card-details {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      gap: 8px;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-sku {
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    /* Pílulas de Especificações (Aro, Tala, Furação) */
+    .spec-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 4px 0 8px;
+    }
+
+    .spec-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      padding: 4px 10px;
+      background: #f1f5f9;
+      color: #1e293b;
+      border-radius: var(--radius-pill);
+    }
+
+    /* Linha de Estoque e Marca */
+    .card-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 10px;
+      border-top: 1px solid #f1f5f9;
+      margin-top: auto;
+    }
+
+    .meta-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .meta-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .meta-value-stock {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .meta-value-stock.low {
+      color: var(--warning);
+    }
+
+    .meta-value-stock.out {
+      color: var(--danger);
+    }
+
+    .meta-value-brand {
+      font-size: 0.875rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-main);
+      text-align: right;
+    }
+
+    /* Ações Rápidas do Card */
+    .card-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    .btn-action-select {
+      background: var(--primary);
+      color: #ffffff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-action-select:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-action-details {
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-action-details:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    /* Estado Vazio */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 24px;
+      background: #ffffff;
+      border-radius: var(--radius-card);
+      border: 1.5px dashed var(--border);
+      color: var(--text-muted);
+    }
+
+    /* Modal de Detalhes */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 24px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 20px;
+      max-width: 640px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-body {
+      padding: 24px 28px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .modal-sku {
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: var(--text-muted);
+    }
+
+    .modal-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    .modal-close-x {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+
+    .modal-img-container {
+      width: 100%;
+      max-width: 300px;
+      aspect-ratio: 1 / 1;
+      margin: 0 auto 16px;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-img-preview {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      display: block;
+    }
+
+    .modal-specs-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin-top: 12px;
+    }
+
+    .modal-specs-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-specs-table td:first-child {
+      color: var(--text-muted);
+      font-weight: 600;
+      width: 40%;
+    }
+
+    .modal-specs-table td:last-child {
+      font-weight: 700;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabeçalho Superior -->
+  <header class="catalogue-header">
+    <div>
+      <div class="header-sub">Catálogo de Rodas</div>
+      <h1 class="header-title">Selecione uma Roda</h1>
+      <p class="header-desc">Filtre por marca, aro, tala, furação, offset e consulte o estoque disponível em tempo real.</p>
+    </div>
+    <button class="btn-close" onclick="alert('Ação Fechar')">
+      Fechar &times;
+    </button>
+  </header>
+
+  <!-- Estrutura Geral: Sidebar de Filtros + Grid de Produtos -->
+  <div class="catalogue-layout">
+
+    <!-- Barra Lateral -->
+    <aside class="sidebar">
+
+      <!-- Busca por Texto Ampla -->
+      <div class="search-block">
+        <label for="searchInput">Pesquisa Rápida</label>
+        <div class="search-input-wrapper">
+          <svg class="search-icon" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="Modelo, marca, SKU, aro..."
+            autofocus
+          >
+        </div>
+      </div>
+
+      <div class="filters-header">
+        <span class="filter-section-title" style="margin: 0;">Filtros</span>
+        <button class="btn-clear-filters" id="btnClearFilters">Limpar</button>
+      </div>
+
+      <!-- Filtro: Marca -->
+      <div class="filter-group">
+        <span class="filter-section-title">Marca</span>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="brand" value="Scorro">
+            <span>Scorro</span>
+          </div>
+          <span class="filter-count" data-count-for="Scorro">0</span>
+        </label>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="brand" value="Kromma">
+            <span>Kromma</span>
+          </div>
+          <span class="filter-count" data-count-for="Kromma">0</span>
+        </label>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="brand" value="TSW">
+            <span>TSW</span>
+          </div>
+          <span class="filter-count" data-count-for="TSW">0</span>
+        </label>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="brand" value="Volcano">
+            <span>Volcano</span>
+          </div>
+          <span class="filter-count" data-count-for="Volcano">0</span>
+        </label>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="brand" value="Enkei">
+            <span>Enkei</span>
+          </div>
+          <span class="filter-count" data-count-for="Enkei">0</span>
+        </label>
+      </div>
+
+      <!-- Filtro: Aro (Diâmetro) -->
+      <div class="filter-group">
+        <span class="filter-section-title">Aro (Diâmetro)</span>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="aro" value="14">
+            <span>Aro 14"</span>
+          </div>
+          <span class="filter-count" data-count-for="14">0</span>
+        </label>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="aro" value="15">
+            <span>Aro 15"</span>
+          </div>
+          <span class="filter-count" data-count-for="15">0</span>
+        </label>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="aro" value="17">
+            <span>Aro 17"</span>
+          </div>
+          <span class="filter-count" data-count-for="17">0</span>
+        </label>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="aro" value="18">
+            <span>Aro 18"</span>
+          </div>
+          <span class="filter-count" data-count-for="18">0</span>
+        </label>
+      </div>
+
+      <!-- Filtro: Furação -->
+      <div class="filter-group">
+        <span class="filter-section-title">Furação (PCD)</span>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="furacao" value="4x100">
+            <span>4x100</span>
+          </div>
+          <span class="filter-count" data-count-for="4x100">0</span>
+        </label>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="furacao" value="5x114,3">
+            <span>5x114,3</span>
+          </div>
+          <span class="filter-count" data-count-for="5x114,3">0</span>
+        </label>
+      </div>
+
+      <!-- Filtro: Estoque -->
+      <div class="filter-group">
+        <span class="filter-section-title">Disponibilidade</span>
+        <label class="filter-option">
+          <div class="filter-label-wrap">
+            <input type="checkbox" class="filter-chk" data-type="stock" value="in_stock">
+            <span>Apenas em Estoque</span>
+          </div>
+          <span class="filter-count" data-count-for="in_stock">0</span>
+        </label>
+      </div>
+
+    </aside>
+
+    <!-- Conteúdo Principal com Barra de Status e Grid -->
+    <main class="main-content">
+
+      <div class="content-topbar">
+        <div class="showing-text" id="showingCount">Exibindo 0 de 0 rodas</div>
+        <div class="sort-wrapper">
+          <span class="sort-label">Ordenar:</span>
+          <select class="sort-select" id="sortSelect">
+            <option value="featured">Destaques</option>
+            <option value="aro-asc">Menor Aro</option>
+            <option value="aro-desc">Maior Aro</option>
+            <option value="stock-desc">Maior Estoque</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grade dos Cards de Produto -->
+      <div class="wheels-grid" id="wheelsGrid"></div>
+
+    </main>
+  </div>
+
+  <!-- Modal de Detalhes -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal-card">
+      <div class="modal-body">
+        <div class="modal-header">
+          <div>
+            <div class="modal-sku" id="modalSku">SKU: --</div>
+            <h2 class="modal-title" id="modalTitle">Nome da Roda</h2>
+          </div>
+          <button class="modal-close-x" id="btnModalClose">&times;</button>
+        </div>
+
+        <div class="modal-img-container">
+          <img src="" alt="" class="modal-img-preview" id="modalImg">
+        </div>
+
+        <table class="modal-specs-table">
+          <tr>
+            <td>Marca</td>
+            <td id="modalBrand">--</td>
+          </tr>
+          <tr>
+            <td>Aro e Tala</td>
+            <td id="modalAroTala">--</td>
+          </tr>
+          <tr>
+            <td>Furação</td>
+            <td id="modalPcd">--</td>
+          </tr>
+          <tr>
+            <td>Offset</td>
+            <td id="modalOffset">--</td>
+          </tr>
+          <tr>
+            <td>Acabamento</td>
+            <td id="modalFinish">--</td>
+          </tr>
+          <tr>
+            <td>Estoque Disponível</td>
+            <td id="modalStock">--</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const WHEELS = [
+      {
+        id: 1,
+        name: "Scorro Opala Tijolinho",
+        sku: "ROD-00125",
+        brand: "SCORRO",
+        aro: 14,
+        tala: "5,5",
+        furacao: "5x114,3",
+        offset: "ET25",
+        finish: "Prata Diamantado",
+        stock: 12,
+        image: "https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 2,
+        name: "Scorro S-215 Rallye Sport",
+        sku: "ROD-00126",
+        brand: "SCORRO",
+        aro: 15,
+        tala: "6,0",
+        furacao: "4x100",
+        offset: "ET38",
+        finish: "Grafite Fosco",
+        stock: 4,
+        image: "https://images.unsplash.com/photo-1580274455191-1c62238fa333?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 3,
+        name: "Kromma K-48 Sport Diamond",
+        sku: "ROD-00210",
+        brand: "KROMMA",
+        aro: 17,
+        tala: "7,0",
+        furacao: "4x100",
+        offset: "ET40",
+        finish: "Black Piano Diamantado",
+        stock: 8,
+        image: "https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 4,
+        name: "Kromma K-55 Concave Special",
+        sku: "ROD-00215",
+        brand: "KROMMA",
+        aro: 17,
+        tala: "7,5",
+        furacao: "5x114,3",
+        offset: "ET35",
+        finish: "Matte Bronze",
+        stock: 2,
+        image: "https://images.unsplash.com/photo-1611821064430-0d40291d0f0b?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 5,
+        name: "TSW Nurburgring Track Edition",
+        sku: "ROD-00340",
+        brand: "TSW",
+        aro: 18,
+        tala: "8,0",
+        furacao: "5x114,3",
+        offset: "ET42",
+        finish: "Gunmetal",
+        stock: 16,
+        image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 6,
+        name: "Volcano Santa Monica",
+        sku: "ROD-00401",
+        brand: "VOLCANO",
+        aro: 17,
+        tala: "6,0",
+        furacao: "4x100",
+        offset: "ET36",
+        finish: "Prata Brilhante",
+        stock: 0,
+        image: "https://images.unsplash.com/photo-1589148938909-4d241c91ee52?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 7,
+        name: "Scorro S-182 Cruz de Malta",
+        sku: "ROD-00130",
+        brand: "SCORRO",
+        aro: 14,
+        tala: "5,5",
+        furacao: "4x100",
+        offset: "ET32",
+        finish: "Preto Diamantado",
+        stock: 18,
+        image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 8,
+        name: "Enkei RPF1 Motorsport Ultra",
+        sku: "ROD-00512",
+        brand: "ENKEI",
+        aro: 15,
+        tala: "7,0",
+        furacao: "4x100",
+        offset: "ET35",
+        finish: "Bright Silver",
+        stock: 6,
+        image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80"
+      }
+    ];
+
+    const searchInput = document.getElementById('searchInput');
+    const btnClearFilters = document.getElementById('btnClearFilters');
+    const wheelsGrid = document.getElementById('wheelsGrid');
+    const showingCount = document.getElementById('showingCount');
+    const sortSelect = document.getElementById('sortSelect');
+
+    const detailModal = document.getElementById('detailModal');
+    const btnModalClose = document.getElementById('btnModalClose');
+
+    function updateFilterCounts() {
+      const counts = {
+        'Scorro': WHEELS.filter(w => w.brand.toUpperCase() === 'SCORRO').length,
+        'Kromma': WHEELS.filter(w => w.brand.toUpperCase() === 'KROMMA').length,
+        'TSW': WHEELS.filter(w => w.brand.toUpperCase() === 'TSW').length,
+        'Volcano': WHEELS.filter(w => w.brand.toUpperCase() === 'VOLCANO').length,
+        'Enkei': WHEELS.filter(w => w.brand.toUpperCase() === 'ENKEI').length,
+        '14': WHEELS.filter(w => w.aro === 14).length,
+        '15': WHEELS.filter(w => w.aro === 15).length,
+        '17': WHEELS.filter(w => w.aro === 17).length,
+        '18': WHEELS.filter(w => w.aro === 18).length,
+        '4x100': WHEELS.filter(w => w.furacao === '4x100').length,
+        '5x114,3': WHEELS.filter(w => w.furacao === '5x114,3').length,
+        'in_stock': WHEELS.filter(w => w.stock > 0).length,
+      };
+
+      for (const [key, val] of Object.entries(counts)) {
+        const el = document.querySelector(`[data-count-for="${key}"]`);
+        if (el) el.textContent = val;
+      }
+    }
+
+    function matchSearch(wheel, query) {
+      if (!query.trim()) return true;
+      const combined = `
+        ${wheel.name}
+        ${wheel.brand}
+        ${wheel.sku}
+        ${wheel.aro} aro${wheel.aro}
+        ${wheel.aro}x${wheel.tala}
+        ${wheel.tala}
+        ${wheel.furacao}
+        ${wheel.offset}
+        ${wheel.finish}
+      `.toLowerCase();
+
+      const terms = query.toLowerCase().trim().split(/\s+/);
+      return terms.every(term => combined.includes(term));
+    }
+
+    function getSelectedFilters() {
+      const checked = document.querySelectorAll('.filter-chk:checked');
+      const filters = {
+        brand: [],
+        aro: [],
+        furacao: [],
+        stock: []
+      };
+
+      checked.forEach(chk => {
+        const type = chk.dataset.type;
+        filters[type].push(chk.value.toLowerCase());
+      });
+
+      return filters;
+    }
+
+    function render() {
+      const query = searchInput.value;
+      const filters = getSelectedFilters();
+
+      let results = WHEELS.filter(wheel => {
+        if (!matchSearch(wheel, query)) return false;
+
+        if (filters.brand.length > 0 && !filters.brand.includes(wheel.brand.toLowerCase())) {
+          return false;
+        }
+
+        if (filters.aro.length > 0 && !filters.aro.includes(wheel.aro.toString())) {
+          return false;
+        }
+
+        if (filters.furacao.length > 0 && !filters.furacao.includes(wheel.furacao.toLowerCase())) {
+          return false;
+        }
+
+        if (filters.stock.includes('in_stock') && wheel.stock <= 0) {
+          return false;
+        }
+
+        return true;
+      });
+
+      const sortVal = sortSelect.value;
+      if (sortVal === 'aro-asc') results.sort((a, b) => a.aro - b.aro);
+      if (sortVal === 'aro-desc') results.sort((a, b) => b.aro - a.aro);
+      if (sortVal === 'stock-desc') results.sort((a, b) => b.stock - a.stock);
+
+      showingCount.textContent = `Exibindo ${results.length} de ${WHEELS.length} rodas`;
+
+      if (results.length === 0) {
+        wheelsGrid.innerHTML = `
+          <div class="empty-state">
+            <h3 style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 6px;">Nenhuma roda corresponde aos filtros</h3>
+            <p>Tente ajustar a busca ou limpar os filtros na barra lateral.</p>
+          </div>
+        `;
+        return;
+      }
+
+      wheelsGrid.innerHTML = results.map(wheel => {
+        let stockClass = '';
+        let stockLabel = `${wheel.stock} unidades`;
+
+        if (wheel.stock === 0) {
+          stockClass = 'out';
+          stockLabel = 'Sem estoque';
+        } else if (wheel.stock <= 3) {
+          stockClass = 'low';
+          stockLabel = `${wheel.stock} un. (Baixo)`;
+        }
+
+        return `
+          <article class="wheel-card">
+            <div class="card-img-wrap">
+              <img src="${wheel.image}" alt="${wheel.name}" class="card-img" loading="lazy">
+            </div>
+
+            <div class="card-details">
+              <div class="card-title" title="${wheel.name}">${wheel.name}</div>
+              <div class="card-sku">SKU: ${wheel.sku}</div>
+
+              <div class="spec-pills">
+                <span class="spec-pill">ARO ${wheel.aro}</span>
+                <span class="spec-pill">TALA ${wheel.tala}</span>
+                <span class="spec-pill">${wheel.furacao}</span>
+              </div>
+
+              <div class="card-meta-row">
+                <div class="meta-block">
+                  <span class="meta-label">Estoque</span>
+                  <span class="meta-value-stock ${stockClass}">${stockLabel}</span>
+                </div>
+                <div class="meta-block">
+                  <span class="meta-label">Marca</span>
+                  <span class="meta-value-brand">${wheel.brand}</span>
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <button class="btn-action-select" onclick="selectWheel(${wheel.id})">Selecionar</button>
+                <button class="btn-action-details" onclick="openDetails(${wheel.id})">Ver detalhes</button>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+    }
+
+    window.openDetails = function(id) {
+      const wheel = WHEELS.find(w => w.id === id);
+      if (!wheel) return;
+
+      document.getElementById('modalSku').textContent = `SKU: ${wheel.sku}`;
+      document.getElementById('modalTitle').textContent = wheel.name;
+      document.getElementById('modalImg').src = wheel.image;
+      document.getElementById('modalBrand').textContent = wheel.brand;
+      document.getElementById('modalAroTala').textContent = `Aro ${wheel.aro}" | Tala ${wheel.tala}"`;
+      document.getElementById('modalPcd').textContent = wheel.furacao;
+      document.getElementById('modalOffset').textContent = wheel.offset;
+      document.getElementById('modalFinish').textContent = wheel.finish;
+      document.getElementById('modalStock').textContent = `${wheel.stock} unidades disponíveis`;
+
+      detailModal.classList.add('active');
+    };
+
+    window.selectWheel = function(id) {
+      const wheel = WHEELS.find(w => w.id === id);
+      alert(`Roda Selecionada:\n${wheel.name} (SKU: ${wheel.sku})\nEstoque: ${wheel.stock} unidades`);
+    };
+
+    btnModalClose.addEventListener('click', () => detailModal.classList.remove('active'));
+    detailModal.addEventListener('click', (e) => {
+      if (e.target === detailModal) detailModal.classList.remove('active');
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') detailModal.classList.remove('active');
+    });
+
+    searchInput.addEventListener('input', render);
+    sortSelect.addEventListener('change', render);
+
+    document.querySelectorAll('.filter-chk').forEach(chk => {
+      chk.addEventListener('change', render);
+    });
+
+    btnClearFilters.addEventListener('click', () => {
+      searchInput.value = '';
+      document.querySelectorAll('.filter-chk').forEach(chk => chk.checked = false);
+      sortSelect.value = 'featured';
+      render();
+    });
+
+    updateFilterCounts();
+    render();
+  </script>
+</body>
+</html>
