@@ -22,7 +22,7 @@ export function PlanilhaImportador() {
 
   const { importarLote } = useProdutoMutations();
 
-  // Baixa modelo de exemplo CSV/Excel
+  // Baixa modelo de exemplo CSV/Excel atualizado com preco, estoque e disponivel
   const baixarPlanilhaModelo = () => {
     const cabecalhos = [
       {
@@ -34,6 +34,9 @@ export function PlanilhaImportador() {
         furacao: '4x100',
         sku: 'SCR-S300-17',
         cabeca_chave: '17mm',
+        preco: 3200.00,
+        estoque: 4,
+        disponivel: 'SIM',
         imagens: 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f;https://images.unsplash.com/photo-1611821064430-0d40291d0f0b',
         descricao: 'Roda esportiva diamantada modelo de teste',
       },
@@ -46,6 +49,9 @@ export function PlanilhaImportador() {
         furacao: '5x114.3',
         sku: 'VOL-CONC-18',
         cabeca_chave: '19mm',
+        preco: 4100.00,
+        estoque: 8,
+        disponivel: 'SIM',
         imagens: 'https://images.unsplash.com/photo-1589148938909-4d241c91ee52',
         descricao: 'Roda aro 18 para sedãs',
       },
@@ -59,7 +65,6 @@ export function PlanilhaImportador() {
 
   const processarDadosPlanilha = (rawRows: any[]) => {
     const processadas: LinhaValidada[] = rawRows.map((r) => {
-      // Normalização de múltiplos nomes de colunas possíveis
       const rawImagens = r.imagens || r.Imagens || r.imagem || r.Imagem || r.image_url || r.fotos || '';
       let imagensArr: string[] = [];
 
@@ -76,6 +81,15 @@ export function PlanilhaImportador() {
         imagensArr = ['https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80'];
       }
 
+      const rawDisponivel = r.disponivel ?? r.Disponivel ?? r.ativo ?? r.Ativo ?? true;
+      const isDisponivel =
+        typeof rawDisponivel === 'boolean'
+          ? rawDisponivel
+          : String(rawDisponivel).trim().toUpperCase() !== 'NAO' &&
+            String(rawDisponivel).trim().toUpperCase() !== 'NÃO' &&
+            String(rawDisponivel).trim() !== '0' &&
+            String(rawDisponivel).trim().toLowerCase() !== 'false';
+
       const itemCandidate = {
         titulo: String(r.titulo || r.Titulo || r.nome || r.Nome || r.modelo || r.Modelo || '').trim(),
         marca: String(r.marca || r.Marca || 'SCORRO').trim().toUpperCase(),
@@ -85,6 +99,9 @@ export function PlanilhaImportador() {
         furacao: String(r.furacao || r.Furacao || r.pcd || r.PCD || '4x100').trim(),
         sku: String(r.sku || r.SKU || `ROD-${Math.floor(10000 + Math.random() * 90000)}`).trim().toUpperCase(),
         cabeca_chave: String(r.cabeca_chave || r.cabecaChave || r.chave || r.Chave || '17mm').trim(),
+        preco: Number(r.preco || r.Preco || r.valor || r.Valor || 0),
+        estoque: Number(r.estoque || r.Estoque || r.quantidade || r.Quantidade || 0),
+        disponivel: isDisponivel,
         imagens: imagensArr,
         descricao: String(r.descricao || r.Descricao || '').trim(),
       };
@@ -166,7 +183,7 @@ export function PlanilhaImportador() {
             Planilha Modelo para Cadastro
           </span>
           <span className="text-xs text-slate-500">
-            Utilize o formato padrão para preencher os dados de rodas sem erro de validação.
+            Formato oficial com suporte a preço, saldo em estoque e disponibilidade.
           </span>
         </div>
         <button
@@ -214,8 +231,7 @@ export function PlanilhaImportador() {
           Clique ou arraste sua planilha CSV ou Excel (.xlsx)
         </h3>
         <p className="text-xs text-slate-500 max-w-md mx-auto">
-          Suporte automático a colunas: <code>titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, imagens, descricao</code>.
-          Múltiplas URLs de imagem podem ser separadas por ponto-e-vírgula (<code>;</code>) ou vírgula.
+          Colunas suportadas: <code>titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, preco, estoque, disponivel, imagens, descricao</code>.
         </p>
       </div>
 
@@ -272,11 +288,10 @@ export function PlanilhaImportador() {
                   <th className="p-3">Título</th>
                   <th className="p-3">Marca / Modelo</th>
                   <th className="p-3">Aro</th>
-                  <th className="p-3">Tala</th>
-                  <th className="p-3">Furação</th>
-                  <th className="p-3">Cabeça Chave</th>
+                  <th className="p-3">Preço</th>
+                  <th className="p-3">Estoque</th>
+                  <th className="p-3">Disponível</th>
                   <th className="p-3">SKU</th>
-                  <th className="p-3">Imagens</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -315,13 +330,18 @@ export function PlanilhaImportador() {
                         <span className="text-slate-500">{item.modelo}</span>
                       </td>
                       <td className="p-3 font-semibold text-slate-800">Aro {item.aro}"</td>
-                      <td className="p-3 font-semibold text-slate-800">{item.tala}"</td>
-                      <td className="p-3 font-mono">{item.furacao}</td>
-                      <td className="p-3">{item.cabeca_chave}</td>
-                      <td className="p-3 font-mono text-slate-500">{item.sku}</td>
-                      <td className="p-3 text-slate-500">
-                        {item.imagens?.length || 0} URL(s)
+                      <td className="p-3 font-extrabold text-slate-900 font-mono">
+                        R$ {Number(item.preco ?? 0).toFixed(2)}
                       </td>
+                      <td className="p-3 font-bold text-slate-800">{item.estoque ?? 0} un.</td>
+                      <td className="p-3">
+                        {item.disponivel !== false && (item.estoque ?? 0) > 0 ? (
+                          <span className="text-emerald-700 font-bold">Sim</span>
+                        ) : (
+                          <span className="text-red-600 font-bold">Não</span>
+                        )}
+                      </td>
+                      <td className="p-3 font-mono text-slate-500">{item.sku}</td>
                     </tr>
                   );
                 })}

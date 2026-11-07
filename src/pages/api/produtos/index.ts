@@ -13,6 +13,8 @@ export const GET: APIRoute = async ({ request }) => {
   const tala = url.searchParams.get('tala');
   const furacao = url.searchParams.get('furacao');
   const cabeca_chave = url.searchParams.get('cabeca_chave');
+  const disponivel = url.searchParams.get('disponivel');
+  const apenasEstoque = url.searchParams.get('apenasEstoque') === 'true';
   const ordenacao = url.searchParams.get('ordenacao') || 'recentes';
 
   let sql = 'SELECT * FROM produtos WHERE 1=1';
@@ -62,8 +64,21 @@ export const GET: APIRoute = async ({ request }) => {
     args.push(cabeca_chave);
   }
 
+  if (disponivel !== null && disponivel !== undefined && disponivel !== '') {
+    sql += ' AND disponivel = ?';
+    args.push(disponivel === 'true' || disponivel === '1' ? 1 : 0);
+  }
+
+  if (apenasEstoque) {
+    sql += ' AND estoque > 0 AND disponivel = 1';
+  }
+
   // Ordenação
-  if (ordenacao === 'aro-asc') {
+  if (ordenacao === 'preco-asc') {
+    sql += ' ORDER BY preco ASC';
+  } else if (ordenacao === 'preco-desc') {
+    sql += ' ORDER BY preco DESC';
+  } else if (ordenacao === 'aro-asc') {
     sql += ' ORDER BY aro ASC, titulo ASC';
   } else if (ordenacao === 'aro-desc') {
     sql += ' ORDER BY aro DESC, titulo ASC';
@@ -88,6 +103,9 @@ export const GET: APIRoute = async ({ request }) => {
         ...row,
         aro: Number(row.aro),
         tala: Number(row.tala),
+        preco: Number(row.preco ?? 0),
+        estoque: Number(row.estoque ?? 0),
+        disponivel: Boolean(row.disponivel === 1 || row.disponivel === true),
         imagens: imagensArr,
       };
     });
@@ -115,8 +133,8 @@ export const POST: APIRoute = async ({ request }) => {
     const imagensJson = JSON.stringify(validated.imagens);
 
     await turso.execute({
-      sql: `INSERT INTO produtos (id, titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, imagens, descricao)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      sql: `INSERT INTO produtos (id, titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, preco, estoque, disponivel, imagens, descricao)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         id,
         validated.titulo,
@@ -127,6 +145,9 @@ export const POST: APIRoute = async ({ request }) => {
         validated.furacao,
         validated.sku,
         validated.cabeca_chave,
+        validated.preco,
+        validated.estoque,
+        validated.disponivel ? 1 : 0,
         imagensJson,
         validated.descricao ?? '',
       ],

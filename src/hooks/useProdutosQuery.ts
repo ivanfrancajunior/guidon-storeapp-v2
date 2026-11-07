@@ -12,6 +12,8 @@ export function useProdutosQuery(filtros: FiltrosCatalogo) {
       if (filtros.tala) p.set('tala', filtros.tala.toString());
       if (filtros.furacao) p.set('furacao', filtros.furacao);
       if (filtros.cabeca_chave) p.set('cabeca_chave', filtros.cabeca_chave);
+      if (filtros.disponivel !== undefined) p.set('disponivel', String(filtros.disponivel));
+      if (filtros.apenasEstoque) p.set('apenasEstoque', 'true');
       if (filtros.ordenacao) p.set('ordenacao', filtros.ordenacao);
 
       const res = await fetch(`/api/produtos?${p.toString()}`);

@@ -21,7 +21,6 @@ export const POST: APIRoute = async ({ request }) => {
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
       try {
-        // Normaliza imagens se vier como string separada por ';' ou ','
         if (typeof item.imagens === 'string') {
           item.imagens = item.imagens
             .split(/[;,]/)
@@ -34,8 +33,8 @@ export const POST: APIRoute = async ({ request }) => {
         const imagensJson = JSON.stringify(validItem.imagens);
 
         statements.push({
-          sql: `INSERT INTO produtos (id, titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, imagens, descricao)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          sql: `INSERT INTO produtos (id, titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, preco, estoque, disponivel, imagens, descricao)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(sku) DO UPDATE SET
                   titulo = excluded.titulo,
                   marca = excluded.marca,
@@ -44,6 +43,9 @@ export const POST: APIRoute = async ({ request }) => {
                   tala = excluded.tala,
                   furacao = excluded.furacao,
                   cabeca_chave = excluded.cabeca_chave,
+                  preco = excluded.preco,
+                  estoque = excluded.estoque,
+                  disponivel = excluded.disponivel,
                   imagens = excluded.imagens,
                   descricao = excluded.descricao,
                   updated_at = CURRENT_TIMESTAMP`,
@@ -57,6 +59,9 @@ export const POST: APIRoute = async ({ request }) => {
             validItem.furacao,
             validItem.sku,
             validItem.cabeca_chave,
+            validItem.preco,
+            validItem.estoque,
+            validItem.disponivel ? 1 : 0,
             imagensJson,
             validItem.descricao ?? '',
           ],

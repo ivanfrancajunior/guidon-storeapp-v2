@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Edit3, Trash2, ShieldCheck, Wrench, Layers } from 'lucide-react';
+import { ArrowLeft, Edit3, Trash2, ShieldCheck, Wrench, Layers, DollarSign, Box, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useProdutoDetailQuery } from '@/hooks/useProdutosQuery';
 import { useProdutoMutations } from '@/hooks/useProdutoMutations';
 import { QueryProvider } from '@/components/providers/QueryProvider';
@@ -42,6 +42,14 @@ function ProdutoDetalheViewContent({ sku }: Props) {
   const imagens = produto.imagens && produto.imagens.length > 0
     ? produto.imagens
     : ['https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80'];
+
+  const precoFormatado = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(produto.preco || 0);
+
+  const isDisponivel = produto.disponivel !== false && (produto.estoque ?? 0) > 0;
+  const isEsgotado = (produto.estoque ?? 0) === 0;
 
   const handleDelete = () => {
     if (confirm(`Tem certeza que deseja excluir permanentemente "${produto.titulo}"?`)) {
@@ -96,11 +104,28 @@ function ProdutoDetalheViewContent({ sku }: Props) {
             <img
               src={imagens[selectedImgIndex] || imagens[0]}
               alt={produto.titulo}
-              className="w-full h-full aspect-square object-contain drop-shadow-xl transition-all duration-200"
+              className={`w-full h-full aspect-square object-contain drop-shadow-xl transition-all duration-200 ${
+                !isDisponivel ? 'opacity-85' : ''
+              }`}
             />
             <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-slate-900 text-xs font-extrabold uppercase px-3 py-1 rounded-full border border-slate-200 shadow-xs">
               {produto.marca}
             </span>
+
+            {/* Badge de Disponibilidade em Destaque */}
+            <div className="absolute top-4 right-4">
+              {isDisponivel ? (
+                <span className="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-xs font-extrabold uppercase px-3 py-1 rounded-full shadow-md">
+                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                  Pronta Entrega
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 bg-red-600 text-white text-xs font-extrabold uppercase px-3 py-1 rounded-full shadow-md">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  {isEsgotado ? 'Esgotado' : 'Indisponível'}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Miniaturas da Galeria */}
@@ -132,7 +157,7 @@ function ProdutoDetalheViewContent({ sku }: Props) {
           </p>
         </div>
 
-        {/* Coluna da Direita: Dados Técnicos e Ficha */}
+        {/* Coluna da Direita: Dados Comerciais e Ficha */}
         <div className="lg:col-span-6 flex flex-col gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -149,6 +174,30 @@ function ProdutoDetalheViewContent({ sku }: Props) {
             <p className="text-sm font-semibold text-slate-500 mt-1">
               Modelo: <span className="text-slate-800">{produto.modelo}</span>
             </p>
+          </div>
+
+          {/* Card Comercial: Preço e Estoque */}
+          <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <span className="text-xs uppercase font-bold text-slate-400 block tracking-wider">
+                Preço Especial de Venda
+              </span>
+              <div className="flex items-baseline gap-2 mt-1">
+                <span className="text-3xl font-extrabold text-white tracking-tight">
+                  {precoFormatado}
+                </span>
+                <span className="text-xs text-slate-400">à vista / cartão</span>
+              </div>
+            </div>
+
+            <div className="sm:text-right border-t sm:border-t-0 sm:border-l border-slate-800 pt-3 sm:pt-0 sm:pl-6 w-full sm:w-auto">
+              <span className="text-xs uppercase font-bold text-slate-400 block tracking-wider">
+                Saldo Físico em Estoque
+              </span>
+              <span className={`text-xl font-extrabold ${isEsgotado ? 'text-red-400' : 'text-emerald-400'}`}>
+                {produto.estoque} unidades
+              </span>
+            </div>
           </div>
 
           {/* Ficha Técnica Completa em Cards */}
@@ -176,12 +225,14 @@ function ProdutoDetalheViewContent({ sku }: Props) {
                 <span className="font-extrabold text-slate-900 text-base">{produto.cabeca_chave}</span>
               </div>
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
-                <span className="text-slate-400 block font-semibold mb-0.5">Marca Fabricante</span>
-                <span className="font-extrabold text-slate-900 text-base">{produto.marca}</span>
+                <span className="text-slate-400 block font-semibold mb-0.5">Status de Estoque</span>
+                <span className={`font-extrabold text-sm ${isDisponivel ? 'text-emerald-700' : 'text-red-700'}`}>
+                  {isDisponivel ? 'Disponível' : isEsgotado ? 'Esgotado' : 'Indisponível'}
+                </span>
               </div>
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
-                <span className="text-slate-400 block font-semibold mb-0.5">Linha / Modelo</span>
-                <span className="font-extrabold text-slate-900 text-base">{produto.modelo}</span>
+                <span className="text-slate-400 block font-semibold mb-0.5">Marca Fabricante</span>
+                <span className="font-extrabold text-slate-900 text-base">{produto.marca}</span>
               </div>
             </div>
           </div>
@@ -209,7 +260,7 @@ function ProdutoDetalheViewContent({ sku }: Props) {
             <div>
               <span className="font-bold block">Garantia e Autenticidade Garantida</span>
               <p className="text-blue-700/90 leading-tight">
-                Produto original de fábrica inspecionado conforme normas de segurança veicular e balanceamento dimensional.
+                Produto original inspecionado conforme normas de segurança veicular e balanceamento dimensional.
               </p>
             </div>
           </div>
@@ -226,4 +277,3 @@ export function ProdutoDetalheView({ sku }: Props) {
     </QueryProvider>
   );
 }
-

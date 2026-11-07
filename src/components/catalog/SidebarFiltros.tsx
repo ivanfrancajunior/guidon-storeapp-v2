@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, RotateCcw, Filter } from 'lucide-react';
+import { Search, RotateCcw, Filter, CheckCircle2, Box } from 'lucide-react';
 import type { FiltrosCatalogo, Produto } from '@/lib/schemas/produto';
 
 interface Props {
@@ -28,6 +28,8 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
       tala: undefined,
       furacao: undefined,
       cabeca_chave: undefined,
+      disponivel: undefined,
+      apenasEstoque: false,
       ordenacao: 'recentes',
     });
   };
@@ -38,7 +40,9 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
     filtros.aro ||
     filtros.tala ||
     filtros.furacao ||
-    filtros.cabeca_chave
+    filtros.cabeca_chave ||
+    filtros.disponivel !== undefined ||
+    filtros.apenasEstoque
   );
 
   return (
@@ -58,6 +62,31 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
             className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all shadow-xs"
           />
         </div>
+      </div>
+
+      {/* Filtro Rápido de Estoque e Disponibilidade */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col gap-2.5">
+        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-0.5 block">
+          Disponibilidade & Estoque
+        </span>
+        
+        <label className="flex items-center gap-2.5 text-xs font-semibold text-slate-800 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={!!filtros.apenasEstoque}
+            onChange={(e) =>
+              onFiltrosChange({
+                ...filtros,
+                apenasEstoque: e.target.checked,
+              })
+            }
+            className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+          />
+          <span className="flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            Apenas em Estoque / Pronta Entrega
+          </span>
+        </label>
       </div>
 
       {/* Cabeçalho da Sidebar */}

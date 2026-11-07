@@ -16,6 +16,9 @@ export function CadastroManualForm() {
     furacao: '4x100',
     sku: '',
     cabeca_chave: '17mm',
+    preco: 0,
+    estoque: 4,
+    disponivel: true,
     imagens: [''],
     descricao: '',
   });
@@ -59,7 +62,6 @@ export function CadastroManualForm() {
     e.preventDefault();
     setErros({});
 
-    // Normaliza URLs de imagens
     const cleanedImgs = (formData.imagens || []).map((s) => s.trim()).filter((s) => s.length > 0);
 
     const parseResult = ProdutoSchema.safeParse({
@@ -95,7 +97,7 @@ export function CadastroManualForm() {
       {/* Formulário à Esquerda */}
       <div className="lg:col-span-7 bg-white border border-slate-200/90 rounded-[20px] p-6 sm:p-8 shadow-xs">
         <h2 className="text-lg font-extrabold text-slate-900 mb-6 pb-3 border-b border-slate-100">
-          Dados Técnicos da Roda
+          Dados Técnicos e Comerciais da Roda
         </h2>
 
         {sucesso && (
@@ -158,6 +160,57 @@ export function CadastroManualForm() {
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
               />
               {erros.modelo && <span className="text-xs text-red-600 mt-1 block">{erros.modelo}</span>}
+            </div>
+          </div>
+
+          {/* Preço, Quantidade em Estoque e Disponibilidade */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Preço de Venda (R$) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                required
+                value={formData.preco || ''}
+                onChange={(e) => handleInputChange('preco', Number(e.target.value))}
+                placeholder="Ex: 2890.00"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 transition-all"
+              />
+              {erros.preco && <span className="text-xs text-red-600 mt-1 block">{erros.preco}</span>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Estoque (unidades) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                min="0"
+                required
+                value={formData.estoque ?? 0}
+                onChange={(e) => handleInputChange('estoque', Number(e.target.value))}
+                placeholder="Ex: 4"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 transition-all"
+              />
+              {erros.estoque && <span className="text-xs text-red-600 mt-1 block">{erros.estoque}</span>}
+            </div>
+
+            <div className="flex flex-col justify-end">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                Disponibilidade
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 select-none">
+                <input
+                  type="checkbox"
+                  checked={formData.disponivel !== false}
+                  onChange={(e) => handleInputChange('disponivel', e.target.checked)}
+                  className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+                />
+                <span className="text-xs font-bold text-slate-800">Item Ativo / À Venda</span>
+              </label>
             </div>
           </div>
 

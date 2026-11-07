@@ -11,6 +11,9 @@ const INITIAL_PRODUTOS = [
     furacao: '4x100',
     sku: 'SCR-S250-15-4100',
     cabeca_chave: '17mm',
+    preco: 2890.00,
+    estoque: 8,
+    disponivel: 1,
     imagens: JSON.stringify([
       'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1611821064430-0d40291d0f0b?auto=format&fit=crop&w=800&q=80'
@@ -27,6 +30,9 @@ const INITIAL_PRODUTOS = [
     furacao: '5x100',
     sku: 'VOL-SMON-18-5100',
     cabeca_chave: '19mm',
+    preco: 3750.00,
+    estoque: 4,
+    disponivel: 1,
     imagens: JSON.stringify([
       'https://images.unsplash.com/photo-1589148938909-4d241c91ee52?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=800&q=80'
@@ -43,6 +49,9 @@ const INITIAL_PRODUTOS = [
     furacao: '5x114.3',
     sku: 'TSW-NURB-19-5114',
     cabeca_chave: '17mm',
+    preco: 5990.00,
+    estoque: 0,
+    disponivel: 0, // Indisponível / Esgotado
     imagens: JSON.stringify([
       'https://images.unsplash.com/photo-1616422285623-13ff0162193c?auto=format&fit=crop&w=800&q=80'
     ]),
@@ -58,6 +67,9 @@ const INITIAL_PRODUTOS = [
     furacao: '4x100',
     sku: 'BBS-SUPRS-17-4100',
     cabeca_chave: '17mm',
+    preco: 4200.00,
+    estoque: 2,
+    disponivel: 1,
     imagens: JSON.stringify([
       'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=800&q=80'
     ]),
@@ -73,6 +85,9 @@ const INITIAL_PRODUTOS = [
     furacao: '4x108',
     sku: 'KRM-KR1450-14-4108',
     cabeca_chave: '19mm',
+    preco: 1980.00,
+    estoque: 12,
+    disponivel: 1,
     imagens: JSON.stringify([
       'https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=800&q=80'
     ]),
@@ -88,6 +103,9 @@ const INITIAL_PRODUTOS = [
     furacao: '5x114.3',
     sku: 'ENK-RPF1-17-5114',
     cabeca_chave: '17mm',
+    preco: 4850.00,
+    estoque: 6,
+    disponivel: 1,
     imagens: JSON.stringify([
       'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=800&q=80'
     ]),
@@ -103,8 +121,8 @@ export async function seedDatabase() {
   if (total === 0) {
     for (const prod of INITIAL_PRODUTOS) {
       await turso.execute({
-        sql: `INSERT INTO produtos (id, titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, imagens, descricao)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        sql: `INSERT INTO produtos (id, titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, preco, estoque, disponivel, imagens, descricao)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         args: [
           prod.id,
           prod.titulo,
@@ -115,9 +133,20 @@ export async function seedDatabase() {
           prod.furacao,
           prod.sku,
           prod.cabeca_chave,
+          prod.preco,
+          prod.estoque,
+          prod.disponivel,
           prod.imagens,
           prod.descricao
         ],
+      });
+    }
+  } else {
+    // Atualiza valores caso os produtos padrão tenham sido inseridos antes das colunas existirem
+    for (const prod of INITIAL_PRODUTOS) {
+      await turso.execute({
+        sql: `UPDATE produtos SET preco = ?, estoque = ?, disponivel = ? WHERE id = ? AND (preco IS NULL OR preco = 0)`,
+        args: [prod.preco, prod.estoque, prod.disponivel, prod.id]
       });
     }
   }

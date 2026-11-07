@@ -11,6 +11,14 @@ export function LiveCardPreview({ dados }: Props) {
       ? dados.imagens[0]
       : 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80';
 
+  const precoFormatado = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(dados.preco || 0);
+
+  const isDisponivel = dados.disponivel !== false && (dados.estoque ?? 0) > 0;
+  const isEsgotado = (dados.estoque ?? 0) === 0;
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
@@ -28,7 +36,9 @@ export function LiveCardPreview({ dados }: Props) {
           <img
             src={capa}
             alt={dados.titulo || 'Prévia da Roda'}
-            className="w-full h-full aspect-square object-contain drop-shadow-md"
+            className={`w-full h-full aspect-square object-contain drop-shadow-md ${
+              !isDisponivel ? 'opacity-75' : ''
+            }`}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
                 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80';
@@ -37,6 +47,20 @@ export function LiveCardPreview({ dados }: Props) {
           <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-slate-200 shadow-xs">
             {dados.marca || 'MARCA'}
           </span>
+
+          {/* Badge de Disponibilidade */}
+          <div className="absolute top-3 right-3">
+            {isDisponivel ? (
+              <span className="bg-emerald-500 text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full shadow-xs">
+                Disponível
+              </span>
+            ) : (
+              <span className="bg-red-600 text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full shadow-xs">
+                {isEsgotado ? 'Esgotado' : 'Indisponível'}
+              </span>
+            )}
+          </div>
+
           {dados.imagens && dados.imagens.length > 1 && (
             <span className="absolute bottom-3 right-3 bg-slate-900/70 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
               +{dados.imagens.length - 1} foto{dados.imagens.length > 2 ? 's' : ''}
@@ -57,22 +81,31 @@ export function LiveCardPreview({ dados }: Props) {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-1.5 my-1">
-            <span className="text-[11px] font-bold px-2.5 py-1 bg-slate-100 text-slate-800 rounded-full">
+          <div className="flex flex-wrap gap-1.5 my-0.5">
+            <span className="text-[11px] font-bold px-2.5 py-0.5 bg-slate-100 text-slate-800 rounded-full">
               Aro {dados.aro || 15}"
             </span>
-            <span className="text-[11px] font-bold px-2.5 py-1 bg-slate-100 text-slate-800 rounded-full">
+            <span className="text-[11px] font-bold px-2.5 py-0.5 bg-slate-100 text-slate-800 rounded-full">
               Tala {dados.tala || 6.0}"
             </span>
-            <span className="text-[11px] font-bold px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full border border-blue-100">
+            <span className="text-[11px] font-bold px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full border border-blue-100">
               {dados.furacao || '4x100'}
-            </span>
-            <span className="text-[11px] font-bold px-2 py-1 bg-slate-100 text-slate-600 rounded-full">
-              {dados.cabeca_chave || '17mm'}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-3 mt-auto border-t border-slate-100">
+          {/* Preço e Estoque */}
+          <div className="flex items-end justify-between pt-2 mt-auto border-t border-slate-100">
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase font-semibold text-slate-400">Preço</span>
+              <span className="text-sm font-extrabold text-slate-900">{precoFormatado}</span>
+            </div>
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] uppercase font-semibold text-slate-400">Estoque</span>
+              <span className="text-xs font-bold text-slate-800">{dados.estoque ?? 0} un.</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
             <button
               type="button"
               disabled

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, ExternalLink, Edit3, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, ExternalLink, Edit3, ChevronLeft, ChevronRight, CheckCircle2, AlertTriangle, XCircle, Box, DollarSign } from 'lucide-react';
 import type { Produto } from '@/lib/schemas/produto';
 
 interface Props {
@@ -21,6 +21,14 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
   const imagens = produto.imagens && produto.imagens.length > 0 
     ? produto.imagens 
     : ['https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80'];
+
+  const precoFormatado = new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(produto.preco || 0);
+
+  const isDisponivel = produto.disponivel !== false && (produto.estoque ?? 0) > 0;
+  const isEsgotado = (produto.estoque ?? 0) === 0;
 
   const nextImg = () => setActiveImgIndex((prev) => (prev + 1) % imagens.length);
   const prevImg = () => setActiveImgIndex((prev) => (prev - 1 + imagens.length) % imagens.length);
@@ -44,6 +52,15 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
               <span className="text-xs font-bold uppercase text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
                 {produto.marca}
               </span>
+              {isDisponivel ? (
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Disponível
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-red-700 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200">
+                  <AlertTriangle className="w-3.5 h-3.5 text-red-600" /> {isEsgotado ? 'Esgotado' : 'Indisponível'}
+                </span>
+              )}
             </div>
             <h2 className="text-xl font-extrabold text-slate-900 mt-1">{produto.titulo}</h2>
           </div>
@@ -58,7 +75,7 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
         {/* Modal Body */}
         <div className="p-6 overflow-y-auto space-y-6">
           {/* Visualizador 1:1 Quadrado */}
-          <div className="relative w-full max-w-[320px] mx-auto aspect-square bg-slate-50 rounded-2xl p-6 flex items-center justify-center border border-slate-200/80 shadow-xs">
+          <div className="relative w-full max-w-[300px] mx-auto aspect-square bg-slate-50 rounded-2xl p-6 flex items-center justify-center border border-slate-200/80 shadow-xs">
             <img
               src={imagens[activeImgIndex]}
               alt={produto.titulo}
@@ -87,7 +104,28 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
             )}
           </div>
 
-          {/* Especificações Rápidas */}
+          {/* Destaque Comercial: Preço e Saldo em Estoque */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-slate-900 text-white p-3.5 rounded-2xl flex items-center justify-between">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Preço de Venda</span>
+                <span className="text-lg font-extrabold text-white">{precoFormatado}</span>
+              </div>
+              <DollarSign className="w-5 h-5 text-emerald-400" />
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl flex items-center justify-between">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Saldo em Estoque</span>
+                <span className={`text-lg font-extrabold ${isEsgotado ? 'text-red-600' : 'text-slate-900'}`}>
+                  {produto.estoque} unidades
+                </span>
+              </div>
+              <Box className="w-5 h-5 text-slate-400" />
+            </div>
+          </div>
+
+          {/* Especificações Técnicas Rápidas */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl">
               <span className="text-slate-400 block font-semibold mb-0.5">Aro</span>

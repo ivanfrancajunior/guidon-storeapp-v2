@@ -35,6 +35,9 @@ export const GET: APIRoute = async ({ params }) => {
       ...row,
       aro: Number(row.aro),
       tala: Number(row.tala),
+      preco: Number(row.preco ?? 0),
+      estoque: Number(row.estoque ?? 0),
+      disponivel: Boolean(row.disponivel === 1 || row.disponivel === true),
       imagens: imagensArr,
     };
 
@@ -70,6 +73,9 @@ export const PUT: APIRoute = async ({ params, request }) => {
               furacao = ?,
               sku = ?,
               cabeca_chave = ?,
+              preco = ?,
+              estoque = ?,
+              disponivel = ?,
               imagens = ?,
               descricao = ?,
               updated_at = CURRENT_TIMESTAMP
@@ -83,6 +89,9 @@ export const PUT: APIRoute = async ({ params, request }) => {
         validated.furacao,
         validated.sku,
         validated.cabeca_chave,
+        validated.preco,
+        validated.estoque,
+        validated.disponivel ? 1 : 0,
         imagensJson,
         validated.descricao ?? '',
         id,

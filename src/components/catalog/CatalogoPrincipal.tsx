@@ -17,6 +17,8 @@ function CatalogoPrincipalContent() {
     tala: undefined,
     furacao: undefined,
     cabeca_chave: undefined,
+    disponivel: undefined,
+    apenasEstoque: false,
     ordenacao: 'recentes',
   });
 
@@ -75,8 +77,10 @@ function CatalogoPrincipalContent() {
                 className="bg-transparent text-slate-700 font-semibold focus:outline-none cursor-pointer"
               >
                 <option value="recentes">Mais recentes</option>
-                <option value="aro-asc">Aro (Menor primeiro)</option>
-                <option value="aro-desc">Aro (Maior primeiro)</option>
+                <option value="preco-asc">Preço: Menor para Maior</option>
+                <option value="preco-desc">Preço: Maior para Menor</option>
+                <option value="aro-asc">Aro: Menor primeiro</option>
+                <option value="aro-desc">Aro: Maior primeiro</option>
                 <option value="titulo-asc">Título (A - Z)</option>
                 <option value="titulo-desc">Título (Z - A)</option>
               </select>
@@ -164,6 +168,8 @@ function CatalogoPrincipalContent() {
                   tala: undefined,
                   furacao: undefined,
                   cabeca_chave: undefined,
+                  disponivel: undefined,
+                  apenasEstoque: false,
                   ordenacao: 'recentes',
                 })
               }
@@ -176,14 +182,6 @@ function CatalogoPrincipalContent() {
 
         {/* Visualização em Grade (Grid) */}
         {!isLoading && !isError && produtos.length > 0 && viewMode === 'grid' && (
-          /*
-            GRID RESPONSIVO CALIBRADO:
-            - 2 colunas mobile (grid-cols-2)
-            - 3 colunas tablet (md:grid-cols-3)
-            - 4 colunas desktop normal (lg:grid-cols-4)
-            - 5 colunas apenas ultrawide (2xl:grid-cols-5)
-            Mantendo os cards sempre amplos para identificação visual imediata
-          */
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-5">
             {produtos.map((produto) => (
               <ProdutoCard
@@ -207,8 +205,9 @@ function CatalogoPrincipalContent() {
                     <th className="p-3.5">Marca / Modelo</th>
                     <th className="p-3.5">Aro / Tala</th>
                     <th className="p-3.5">Furação</th>
-                    <th className="p-3.5">Cabeça Chave</th>
-                    <th className="p-3.5">SKU</th>
+                    <th className="p-3.5">Preço</th>
+                    <th className="p-3.5">Estoque</th>
+                    <th className="p-3.5">Status</th>
                     <th className="p-3.5 text-right pr-5">Ações</th>
                   </tr>
                 </thead>
@@ -218,6 +217,13 @@ function CatalogoPrincipalContent() {
                       produto.imagens && produto.imagens.length > 0
                         ? produto.imagens[0]
                         : 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80';
+                    const precoFormatado = new Intl.NumberFormat('pt-BR', {
+                      style: 'currency',
+                      currency: 'BRL',
+                    }).format(produto.preco || 0);
+
+                    const isDisponivel = produto.disponivel !== false && (produto.estoque ?? 0) > 0;
+
                     return (
                       <tr key={produto.id || produto.sku} className="hover:bg-slate-50/80 transition-colors">
                         <td className="p-3 pl-5">
@@ -252,8 +258,25 @@ function CatalogoPrincipalContent() {
                             {produto.furacao}
                           </span>
                         </td>
-                        <td className="p-3 text-slate-700">{produto.cabeca_chave}</td>
-                        <td className="p-3 font-mono text-slate-500">{produto.sku}</td>
+                        <td className="p-3 font-extrabold text-slate-900 font-mono">
+                          {precoFormatado}
+                        </td>
+                        <td className="p-3">
+                          <span className={`font-bold ${(produto.estoque ?? 0) === 0 ? 'text-red-600' : 'text-slate-800'}`}>
+                            {produto.estoque ?? 0} un.
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          {isDisponivel ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Disponível
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-50 text-red-700 border border-red-200">
+                              {(produto.estoque ?? 0) === 0 ? 'Esgotado' : 'Indisponível'}
+                            </span>
+                          )}
+                        </td>
                         <td className="p-3 text-right pr-5">
                           <div className="flex items-center justify-end gap-2">
                             <button
@@ -299,4 +322,3 @@ export function CatalogoPrincipal() {
     </QueryProvider>
   );
 }
-
