@@ -16,7 +16,7 @@ export function LiveCardPreview({ dados }: Props) {
     currency: 'BRL',
   }).format(dados.preco || 0);
 
-  const isDisponivel = dados.disponivel !== false && (dados.estoque ?? 0) > 0;
+  const isAtivo = dados.status !== 'Inativo';
   const isEsgotado = (dados.estoque ?? 0) === 0;
 
   return (
@@ -37,7 +37,7 @@ export function LiveCardPreview({ dados }: Props) {
             src={capa}
             alt={dados.titulo || 'Prévia da Roda'}
             className={`w-full h-full aspect-square object-contain drop-shadow-md ${
-              !isDisponivel ? 'opacity-75' : ''
+              !isAtivo ? 'opacity-70 grayscale' : ''
             }`}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
@@ -48,15 +48,20 @@ export function LiveCardPreview({ dados }: Props) {
             {dados.marca || 'MARCA'}
           </span>
 
-          {/* Badge de Disponibilidade */}
-          <div className="absolute top-3 right-3">
-            {isDisponivel ? (
+          {/* Badge de Status e Condição */}
+          <div className="absolute top-3 right-3 flex items-center gap-1">
+            {dados.condicao && dados.condicao !== 'Nova' && (
+              <span className="bg-amber-100 text-amber-900 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full">
+                {dados.condicao}
+              </span>
+            )}
+            {isAtivo ? (
               <span className="bg-emerald-500 text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full shadow-xs">
-                Disponível
+                Ativo
               </span>
             ) : (
-              <span className="bg-red-600 text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full shadow-xs">
-                {isEsgotado ? 'Esgotado' : 'Indisponível'}
+              <span className="bg-slate-800 text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full shadow-xs">
+                Inativo
               </span>
             )}
           </div>
@@ -76,7 +81,7 @@ export function LiveCardPreview({ dados }: Props) {
             <div className="flex items-center justify-between text-xs text-slate-500 font-mono mt-0.5">
               <span>SKU: {dados.sku || 'SKU-0000'}</span>
               <span className="font-sans text-[11px] font-semibold text-slate-400">
-                {dados.modelo || 'Modelo'}
+                {dados.modelo || 'Modelo'} • {dados.acabamento || 'Padrão'}
               </span>
             </div>
           </div>
@@ -93,14 +98,14 @@ export function LiveCardPreview({ dados }: Props) {
             </span>
           </div>
 
-          {/* Preço e Estoque */}
+          {/* Preço e Estoque no Depósito */}
           <div className="flex items-end justify-between pt-2 mt-auto border-t border-slate-100">
             <div className="flex flex-col">
               <span className="text-[10px] uppercase font-semibold text-slate-400">Preço</span>
               <span className="text-sm font-extrabold text-slate-900">{precoFormatado}</span>
             </div>
             <div className="flex flex-col items-end">
-              <span className="text-[10px] uppercase font-semibold text-slate-400">Estoque</span>
+              <span className="text-[10px] uppercase font-semibold text-slate-400">Depósito</span>
               <span className="text-xs font-bold text-slate-800">{dados.estoque ?? 0} un.</span>
             </div>
           </div>

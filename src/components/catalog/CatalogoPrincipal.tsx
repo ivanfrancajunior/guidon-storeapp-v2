@@ -17,7 +17,9 @@ function CatalogoPrincipalContent() {
     tala: undefined,
     furacao: undefined,
     cabeca_chave: undefined,
-    disponivel: undefined,
+    acabamento: undefined,
+    condicao: undefined,
+    status: undefined,
     apenasEstoque: false,
     ordenacao: 'recentes',
   });
@@ -168,7 +170,9 @@ function CatalogoPrincipalContent() {
                   tala: undefined,
                   furacao: undefined,
                   cabeca_chave: undefined,
-                  disponivel: undefined,
+                  acabamento: undefined,
+                  condicao: undefined,
+                  status: undefined,
                   apenasEstoque: false,
                   ordenacao: 'recentes',
                 })
@@ -205,8 +209,10 @@ function CatalogoPrincipalContent() {
                     <th className="p-3.5">Marca / Modelo</th>
                     <th className="p-3.5">Aro / Tala</th>
                     <th className="p-3.5">Furação</th>
+                    <th className="p-3.5">Acabamento</th>
                     <th className="p-3.5">Preço</th>
-                    <th className="p-3.5">Estoque</th>
+                    <th className="p-3.5">Depósito</th>
+                    <th className="p-3.5">Condição</th>
                     <th className="p-3.5">Status</th>
                     <th className="p-3.5 text-right pr-5">Ações</th>
                   </tr>
@@ -222,7 +228,7 @@ function CatalogoPrincipalContent() {
                       currency: 'BRL',
                     }).format(produto.preco || 0);
 
-                    const isDisponivel = produto.disponivel !== false && (produto.estoque ?? 0) > 0;
+                    const isAtivo = produto.status === 'Ativo';
 
                     return (
                       <tr key={produto.id || produto.sku} className="hover:bg-slate-50/80 transition-colors">
@@ -258,6 +264,7 @@ function CatalogoPrincipalContent() {
                             {produto.furacao}
                           </span>
                         </td>
+                        <td className="p-3 text-slate-700">{produto.acabamento || 'Padrão'}</td>
                         <td className="p-3 font-extrabold text-slate-900 font-mono">
                           {precoFormatado}
                         </td>
@@ -267,13 +274,16 @@ function CatalogoPrincipalContent() {
                           </span>
                         </td>
                         <td className="p-3">
-                          {isDisponivel ? (
+                          <span className="text-slate-700 font-semibold">{produto.condicao || 'Nova'}</span>
+                        </td>
+                        <td className="p-3">
+                          {isAtivo ? (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                              Disponível
+                              Ativo
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-50 text-red-700 border border-red-200">
-                              {(produto.estoque ?? 0) === 0 ? 'Esgotado' : 'Indisponível'}
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-600 border border-slate-200">
+                              Inativo
                             </span>
                           )}
                         </td>

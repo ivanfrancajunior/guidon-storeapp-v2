@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Edit3, Trash2, ShieldCheck, Wrench, Layers, DollarSign, Box, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Edit3, Trash2, ShieldCheck, Wrench, Layers, DollarSign, Box, CheckCircle2, AlertTriangle, XCircle, Sparkles } from 'lucide-react';
 import { useProdutoDetailQuery } from '@/hooks/useProdutosQuery';
 import { useProdutoMutations } from '@/hooks/useProdutoMutations';
 import { QueryProvider } from '@/components/providers/QueryProvider';
@@ -48,7 +48,7 @@ function ProdutoDetalheViewContent({ sku }: Props) {
     currency: 'BRL',
   }).format(produto.preco || 0);
 
-  const isDisponivel = produto.disponivel !== false && (produto.estoque ?? 0) > 0;
+  const isAtivo = produto.status === 'Ativo';
   const isEsgotado = (produto.estoque ?? 0) === 0;
 
   const handleDelete = () => {
@@ -105,24 +105,27 @@ function ProdutoDetalheViewContent({ sku }: Props) {
               src={imagens[selectedImgIndex] || imagens[0]}
               alt={produto.titulo}
               className={`w-full h-full aspect-square object-contain drop-shadow-xl transition-all duration-200 ${
-                !isDisponivel ? 'opacity-85' : ''
+                !isAtivo ? 'opacity-70 grayscale' : ''
               }`}
             />
             <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-slate-900 text-xs font-extrabold uppercase px-3 py-1 rounded-full border border-slate-200 shadow-xs">
               {produto.marca}
             </span>
 
-            {/* Badge de Disponibilidade em Destaque */}
-            <div className="absolute top-4 right-4">
-              {isDisponivel ? (
+            {/* Badge de Status em Destaque */}
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+              <span className="bg-slate-900/80 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                {produto.condicao || 'Nova'}
+              </span>
+              {isAtivo ? (
                 <span className="inline-flex items-center gap-1.5 bg-emerald-600 text-white text-xs font-extrabold uppercase px-3 py-1 rounded-full shadow-md">
                   <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                  Pronta Entrega
+                  Ativo
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 bg-red-600 text-white text-xs font-extrabold uppercase px-3 py-1 rounded-full shadow-md">
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  {isEsgotado ? 'Esgotado' : 'Indisponível'}
+                <span className="inline-flex items-center gap-1.5 bg-slate-700 text-white text-xs font-extrabold uppercase px-3 py-1 rounded-full shadow-md">
+                  <XCircle className="w-3.5 h-3.5" />
+                  Inativo
                 </span>
               )}
             </div>
@@ -160,12 +163,15 @@ function ProdutoDetalheViewContent({ sku }: Props) {
         {/* Coluna da Direita: Dados Comerciais e Ficha */}
         <div className="lg:col-span-6 flex flex-col gap-6">
           <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
               <span className="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-md">
                 SKU: {produto.sku}
               </span>
               <span className="text-xs font-extrabold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-md border border-blue-100">
                 {produto.marca}
+              </span>
+              <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
+                Acabamento: {produto.acabamento || 'Padrão'}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight">
@@ -176,11 +182,11 @@ function ProdutoDetalheViewContent({ sku }: Props) {
             </p>
           </div>
 
-          {/* Card Comercial: Preço e Estoque */}
+          {/* Card Comercial: Preço e Estoque no Depósito */}
           <div className="bg-slate-900 text-white rounded-2xl p-6 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <span className="text-xs uppercase font-bold text-slate-400 block tracking-wider">
-                Preço Especial de Venda
+                Preço de Venda
               </span>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="text-3xl font-extrabold text-white tracking-tight">
@@ -192,7 +198,7 @@ function ProdutoDetalheViewContent({ sku }: Props) {
 
             <div className="sm:text-right border-t sm:border-t-0 sm:border-l border-slate-800 pt-3 sm:pt-0 sm:pl-6 w-full sm:w-auto">
               <span className="text-xs uppercase font-bold text-slate-400 block tracking-wider">
-                Saldo Físico em Estoque
+                Estoque no Depósito
               </span>
               <span className={`text-xl font-extrabold ${isEsgotado ? 'text-red-400' : 'text-emerald-400'}`}>
                 {produto.estoque} unidades
@@ -225,14 +231,12 @@ function ProdutoDetalheViewContent({ sku }: Props) {
                 <span className="font-extrabold text-slate-900 text-base">{produto.cabeca_chave}</span>
               </div>
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
-                <span className="text-slate-400 block font-semibold mb-0.5">Status de Estoque</span>
-                <span className={`font-extrabold text-sm ${isDisponivel ? 'text-emerald-700' : 'text-red-700'}`}>
-                  {isDisponivel ? 'Disponível' : isEsgotado ? 'Esgotado' : 'Indisponível'}
-                </span>
+                <span className="text-slate-400 block font-semibold mb-0.5">Acabamento</span>
+                <span className="font-extrabold text-slate-900 text-sm truncate block">{produto.acabamento || 'Padrão'}</span>
               </div>
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/60">
-                <span className="text-slate-400 block font-semibold mb-0.5">Marca Fabricante</span>
-                <span className="font-extrabold text-slate-900 text-base">{produto.marca}</span>
+                <span className="text-slate-400 block font-semibold mb-0.5">Condição</span>
+                <span className="font-extrabold text-slate-900 text-sm">{produto.condicao || 'Nova'}</span>
               </div>
             </div>
           </div>
@@ -260,7 +264,7 @@ function ProdutoDetalheViewContent({ sku }: Props) {
             <div>
               <span className="font-bold block">Garantia e Autenticidade Garantida</span>
               <p className="text-blue-700/90 leading-tight">
-                Produto original inspecionado conforme normas de segurança veicular e balanceamento dimensional.
+                Produto verificado e inspecionado conforme especificações técnicas do fabricante e balanceamento dimensional.
               </p>
             </div>
           </div>

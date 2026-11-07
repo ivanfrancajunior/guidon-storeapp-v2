@@ -22,57 +22,71 @@ export function PlanilhaImportador() {
 
   const { importarLote } = useProdutoMutations();
 
-  // Baixa modelo de exemplo CSV/Excel atualizado com preco, estoque e disponivel
+  // Baixa modelo de exemplo com a ordem e nomes exatos solicitados
   const baixarPlanilhaModelo = () => {
     const cabecalhos = [
       {
-        titulo: 'Roda Esportiva Exemplo Aro 17',
-        marca: 'SCORRO',
-        modelo: 'S-300',
-        aro: 17,
-        tala: 7.0,
-        furacao: '4x100',
-        sku: 'SCR-S300-17',
-        cabeca_chave: '17mm',
-        preco: 3200.00,
-        estoque: 4,
-        disponivel: 'SIM',
-        imagens: 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f;https://images.unsplash.com/photo-1611821064430-0d40291d0f0b',
-        descricao: 'Roda esportiva diamantada modelo de teste',
+        SKU: 'SCR-S250-15',
+        Marca: 'SCORRO',
+        Modelo: 'S-250',
+        Aro: 15,
+        Tala: 6.0,
+        'Furação': '4x100',
+        'Cabeça de Chave': '17mm',
+        'Título': 'Roda Esportiva Scorro S-250 Aro 15 Diamantada',
+        Acabamento: 'Diamantada Prata',
+        'Estoque no depósito': 8,
+        'Preço': 2890.00,
+        'Condição': 'Nova',
+        'Descrição': 'Roda de liga leve de alta performance Scorro S-250',
+        Status: 'Ativo',
+        Imagens: 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f;https://images.unsplash.com/photo-1611821064430-0d40291d0f0b',
       },
       {
-        titulo: 'Roda Esportiva Exemplo Aro 18',
-        marca: 'VOLCANO',
-        modelo: 'Concept',
-        aro: 18,
-        tala: 7.5,
-        furacao: '5x114.3',
-        sku: 'VOL-CONC-18',
-        cabeca_chave: '19mm',
-        preco: 4100.00,
-        estoque: 8,
-        disponivel: 'SIM',
-        imagens: 'https://images.unsplash.com/photo-1589148938909-4d241c91ee52',
-        descricao: 'Roda aro 18 para sedãs',
+        SKU: 'VOL-SMON-18',
+        Marca: 'VOLCANO',
+        Modelo: 'Santa Monica',
+        Aro: 18,
+        Tala: 7.0,
+        'Furação': '5x100',
+        'Cabeça de Chave': '19mm',
+        'Título': 'Roda Volcano Santa Monica Aro 18',
+        Acabamento: 'Prata Diamantada',
+        'Estoque no depósito': 4,
+        'Preço': 3750.00,
+        'Condição': 'Nova',
+        'Descrição': 'Clássica Santa Monica aro 18',
+        Status: 'Ativo',
+        Imagens: 'https://images.unsplash.com/photo-1589148938909-4d241c91ee52',
       },
     ];
 
     const ws = XLSX.utils.json_to_sheet(cabecalhos);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Modelo');
+    XLSX.utils.book_append_sheet(wb, ws, 'Rodas');
     XLSX.writeFile(wb, 'planilha_modelo_rodas.xlsx');
   };
 
   const processarDadosPlanilha = (rawRows: any[]) => {
     const processadas: LinhaValidada[] = rawRows.map((r) => {
-      const rawImagens = r.imagens || r.Imagens || r.imagem || r.Imagem || r.image_url || r.fotos || '';
+      // Normalização tolerante a variações com e sem acento / maiúsculas
+      const getVal = (...keys: string[]) => {
+        for (const k of keys) {
+          if (r[k] !== undefined && r[k] !== null && String(r[k]).trim() !== '') {
+            return r[k];
+          }
+        }
+        return undefined;
+      };
+
+      const rawImagens = getVal('Imagens', 'imagens', 'imagem', 'Imagem', 'image_url', 'fotos') || '';
       let imagensArr: string[] = [];
 
       if (typeof rawImagens === 'string') {
         imagensArr = rawImagens
           .split(/[;,]/)
-          .map((s) => s.trim())
-          .filter((s) => s.length > 0);
+          .map((s: string) => s.trim())
+          .filter((s: string) => s.length > 0);
       } else if (Array.isArray(rawImagens)) {
         imagensArr = rawImagens;
       }
@@ -81,29 +95,31 @@ export function PlanilhaImportador() {
         imagensArr = ['https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80'];
       }
 
-      const rawDisponivel = r.disponivel ?? r.Disponivel ?? r.ativo ?? r.Ativo ?? true;
-      const isDisponivel =
-        typeof rawDisponivel === 'boolean'
-          ? rawDisponivel
-          : String(rawDisponivel).trim().toUpperCase() !== 'NAO' &&
-            String(rawDisponivel).trim().toUpperCase() !== 'NÃO' &&
-            String(rawDisponivel).trim() !== '0' &&
-            String(rawDisponivel).trim().toLowerCase() !== 'false';
+      const rawStatus = getVal('Status', 'status', 'situacao', 'Situação');
+      let statusFormatado = 'Ativo';
+      if (rawStatus !== undefined) {
+        const s = String(rawStatus).trim().toLowerCase();
+        if (s === 'inativo' || s === 'inactive' || s === 'nao' || s === 'não' || s === '0' || s === 'false') {
+          statusFormatado = 'Inativo';
+        }
+      }
 
       const itemCandidate = {
-        titulo: String(r.titulo || r.Titulo || r.nome || r.Nome || r.modelo || r.Modelo || '').trim(),
-        marca: String(r.marca || r.Marca || 'SCORRO').trim().toUpperCase(),
-        modelo: String(r.modelo || r.Modelo || r.linha || r.Linha || 'Padrão').trim(),
-        aro: Number(r.aro || r.Aro || 15),
-        tala: Number(r.tala || r.Tala || 6.0),
-        furacao: String(r.furacao || r.Furacao || r.pcd || r.PCD || '4x100').trim(),
-        sku: String(r.sku || r.SKU || `ROD-${Math.floor(10000 + Math.random() * 90000)}`).trim().toUpperCase(),
-        cabeca_chave: String(r.cabeca_chave || r.cabecaChave || r.chave || r.Chave || '17mm').trim(),
-        preco: Number(r.preco || r.Preco || r.valor || r.Valor || 0),
-        estoque: Number(r.estoque || r.Estoque || r.quantidade || r.Quantidade || 0),
-        disponivel: isDisponivel,
+        sku: String(getVal('SKU', 'sku', 'Codigo', 'Código') || `ROD-${Math.floor(10000 + Math.random() * 90000)}`).trim().toUpperCase(),
+        marca: String(getVal('Marca', 'marca') || 'SCORRO').trim().toUpperCase(),
+        modelo: String(getVal('Modelo', 'modelo', 'linha') || 'Padrão').trim(),
+        aro: Number(getVal('Aro', 'aro') || 15),
+        tala: Number(getVal('Tala', 'tala') || 6.0),
+        furacao: String(getVal('Furação', 'Furacao', 'furacao', 'pcd', 'PCD') || '4x100').trim(),
+        cabeca_chave: String(getVal('Cabeça de Chave', 'Cabeca de Chave', 'cabeca_chave', 'chave') || '17mm').trim(),
+        titulo: String(getVal('Título', 'Titulo', 'titulo', 'nome', 'Nome') || '').trim(),
+        acabamento: String(getVal('Acabamento', 'acabamento', 'finish') || 'Padrão').trim(),
+        estoque: Number(getVal('Estoque no depósito', 'Estoque no deposito', 'estoque', 'Estoque', 'quantidade') || 0),
+        preco: Number(getVal('Preço', 'Preco', 'preco', 'valor', 'Valor') || 0),
+        condicao: String(getVal('Condição', 'Condicao', 'condicao') || 'Nova').trim(),
+        descricao: String(getVal('Descrição', 'Descricao', 'descricao') || '').trim(),
+        status: statusFormatado,
         imagens: imagensArr,
-        descricao: String(r.descricao || r.Descricao || '').trim(),
       };
 
       const res = ProdutoSchema.safeParse(itemCandidate);
@@ -175,24 +191,24 @@ export function PlanilhaImportador() {
   const totalErros = linhas.filter((l) => !l.valido).length;
 
   return (
-    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full">
+    <div className="flex flex-col gap-6 max-w-6xl mx-auto w-full">
       {/* Botão Baixar Modelo */}
-      <div className="flex justify-between items-center bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
         <div>
           <span className="font-extrabold text-slate-900 text-sm block">
-            Planilha Modelo para Cadastro
+            Planilha Modelo Oficial
           </span>
           <span className="text-xs text-slate-500">
-            Formato oficial com suporte a preço, saldo em estoque e disponibilidade.
+            Contém exatamente as 15 colunas: SKU, Marca, Modelo, Aro, Tala, Furação, Cabeça de Chave, Título, Acabamento, Estoque no depósito, Preço, Condição, Descrição, Status, Imagens.
           </span>
         </div>
         <button
           type="button"
           onClick={baixarPlanilhaModelo}
-          className="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-4 py-2.5 rounded-full transition-colors"
+          className="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold px-4 py-2.5 rounded-full transition-colors shrink-0"
         >
           <Download className="w-4 h-4 text-slate-600" />
-          <span>Baixar Planilha Modelo (.xlsx)</span>
+          <span>Baixar Modelo (.xlsx)</span>
         </button>
       </div>
 
@@ -230,8 +246,8 @@ export function PlanilhaImportador() {
         <h3 className="font-extrabold text-slate-900 text-base mb-1">
           Clique ou arraste sua planilha CSV ou Excel (.xlsx)
         </h3>
-        <p className="text-xs text-slate-500 max-w-md mx-auto">
-          Colunas suportadas: <code>titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, preco, estoque, disponivel, imagens, descricao</code>.
+        <p className="text-xs text-slate-500 max-w-2xl mx-auto">
+          Reconhece automaticamente as colunas da sua planilha. Múltiplas imagens podem ser separadas por ponto-e-vírgula (<code>;</code>) ou vírgula.
         </p>
       </div>
 
@@ -241,7 +257,7 @@ export function PlanilhaImportador() {
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             <span>
-              Sucesso! {resultadoFinal.importados} rodas foram gravadas no banco Turso. Redirecionando...
+              Sucesso! {resultadoFinal.importados} rodas foram gravadas no Turso. Redirecionando...
             </span>
           </div>
         </div>
@@ -284,14 +300,16 @@ export function PlanilhaImportador() {
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 sticky top-0 border-b border-slate-200 text-slate-500 font-extrabold uppercase tracking-wider">
                 <tr>
-                  <th className="p-3">Status</th>
+                  <th className="p-3">Status Validação</th>
+                  <th className="p-3">SKU</th>
                   <th className="p-3">Título</th>
                   <th className="p-3">Marca / Modelo</th>
                   <th className="p-3">Aro</th>
+                  <th className="p-3">Acabamento</th>
                   <th className="p-3">Preço</th>
-                  <th className="p-3">Estoque</th>
-                  <th className="p-3">Disponível</th>
-                  <th className="p-3">SKU</th>
+                  <th className="p-3">Depósito</th>
+                  <th className="p-3">Condição</th>
+                  <th className="p-3">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -322,6 +340,7 @@ export function PlanilhaImportador() {
                           </div>
                         )}
                       </td>
+                      <td className="p-3 font-mono font-bold text-slate-600">{item.sku}</td>
                       <td className="p-3 font-semibold text-slate-900 max-w-xs truncate">
                         {item.titulo}
                       </td>
@@ -330,18 +349,17 @@ export function PlanilhaImportador() {
                         <span className="text-slate-500">{item.modelo}</span>
                       </td>
                       <td className="p-3 font-semibold text-slate-800">Aro {item.aro}"</td>
+                      <td className="p-3 text-slate-700">{item.acabamento || 'Padrão'}</td>
                       <td className="p-3 font-extrabold text-slate-900 font-mono">
                         R$ {Number(item.preco ?? 0).toFixed(2)}
                       </td>
                       <td className="p-3 font-bold text-slate-800">{item.estoque ?? 0} un.</td>
+                      <td className="p-3 text-slate-700 font-semibold">{item.condicao || 'Nova'}</td>
                       <td className="p-3">
-                        {item.disponivel !== false && (item.estoque ?? 0) > 0 ? (
-                          <span className="text-emerald-700 font-bold">Sim</span>
-                        ) : (
-                          <span className="text-red-600 font-bold">Não</span>
-                        )}
+                        <span className={`font-bold ${item.status === 'Ativo' ? 'text-emerald-700' : 'text-slate-500'}`}>
+                          {item.status}
+                        </span>
                       </td>
-                      <td className="p-3 font-mono text-slate-500">{item.sku}</td>
                     </tr>
                   );
                 })}

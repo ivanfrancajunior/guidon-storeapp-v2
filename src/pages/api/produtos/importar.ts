@@ -33,37 +33,41 @@ export const POST: APIRoute = async ({ request }) => {
         const imagensJson = JSON.stringify(validItem.imagens);
 
         statements.push({
-          sql: `INSERT INTO produtos (id, titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, preco, estoque, disponivel, imagens, descricao)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          sql: `INSERT INTO produtos (id, sku, marca, modelo, aro, tala, furacao, cabeca_chave, titulo, acabamento, estoque, preco, condicao, descricao, status, imagens)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(sku) DO UPDATE SET
-                  titulo = excluded.titulo,
                   marca = excluded.marca,
                   modelo = excluded.modelo,
                   aro = excluded.aro,
                   tala = excluded.tala,
                   furacao = excluded.furacao,
                   cabeca_chave = excluded.cabeca_chave,
-                  preco = excluded.preco,
+                  titulo = excluded.titulo,
+                  acabamento = excluded.acabamento,
                   estoque = excluded.estoque,
-                  disponivel = excluded.disponivel,
-                  imagens = excluded.imagens,
+                  preco = excluded.preco,
+                  condicao = excluded.condicao,
                   descricao = excluded.descricao,
+                  status = excluded.status,
+                  imagens = excluded.imagens,
                   updated_at = CURRENT_TIMESTAMP`,
           args: [
             id,
-            validItem.titulo,
+            validItem.sku,
             validItem.marca,
             validItem.modelo,
             validItem.aro,
             validItem.tala,
             validItem.furacao,
-            validItem.sku,
             validItem.cabeca_chave,
-            validItem.preco,
-            validItem.estoque,
-            validItem.disponivel ? 1 : 0,
-            imagensJson,
+            validItem.titulo,
+            validItem.acabamento ?? 'Padrão',
+            validItem.estoque ?? 0,
+            validItem.preco ?? 0,
+            validItem.condicao ?? 'Nova',
             validItem.descricao ?? '',
+            validItem.status ?? 'Ativo',
+            imagensJson,
           ],
         });
       } catch (err: any) {

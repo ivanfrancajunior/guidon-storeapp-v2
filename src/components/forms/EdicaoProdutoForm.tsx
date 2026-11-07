@@ -158,8 +158,22 @@ function EdicaoProdutoFormContent({ id }: Props) {
             {erros.titulo && <span className="text-xs text-red-600 mt-1 block">{erros.titulo}</span>}
           </div>
 
-          {/* Marca e Modelo */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* SKU, Marca e Modelo */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                SKU <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.sku || ''}
+                onChange={(e) => handleInputChange('sku', e.target.value.toUpperCase())}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-blue-600 focus:bg-white uppercase transition-all"
+              />
+              {erros.sku && <span className="text-xs text-red-600 mt-1 block">{erros.sku}</span>}
+            </div>
+
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
                 Marca <span className="text-red-500">*</span>
@@ -189,11 +203,108 @@ function EdicaoProdutoFormContent({ id }: Props) {
             </div>
           </div>
 
-          {/* Preço, Quantidade em Estoque e Disponibilidade */}
+          {/* Acabamento e Condição */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                Acabamento
+              </label>
+              <input
+                type="text"
+                value={formData.acabamento || ''}
+                onChange={(e) => handleInputChange('acabamento', e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                Condição
+              </label>
+              <select
+                value={formData.condicao || 'Nova'}
+                onChange={(e) => handleInputChange('condicao', e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 focus:bg-white transition-all cursor-pointer"
+              >
+                <option value="Nova">Nova</option>
+                <option value="Seminova">Seminova</option>
+                <option value="Usada">Usada</option>
+                <option value="Restaurada">Restaurada</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Aro, Tala, Furação, Cabeça de Chave */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                Aro <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                min="10"
+                max="30"
+                required
+                value={formData.aro || ''}
+                onChange={(e) => handleInputChange('aro', Number(e.target.value))}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+              />
+              {erros.aro && <span className="text-xs text-red-600 mt-1 block">{erros.aro}</span>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                Tala <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                min="3"
+                max="16"
+                required
+                value={formData.tala || ''}
+                onChange={(e) => handleInputChange('tala', Number(e.target.value))}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+              />
+              {erros.tala && <span className="text-xs text-red-600 mt-1 block">{erros.tala}</span>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                Furação <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.furacao || ''}
+                onChange={(e) => handleInputChange('furacao', e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+              />
+              {erros.furacao && <span className="text-xs text-red-600 mt-1 block">{erros.furacao}</span>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                Cabeça Chave <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.cabeca_chave || ''}
+                onChange={(e) => handleInputChange('cabeca_chave', e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+              />
+              {erros.cabeca_chave && (
+                <span className="text-xs text-red-600 mt-1 block">{erros.cabeca_chave}</span>
+              )}
+            </div>
+          </div>
+
+          {/* Preço, Estoque no Depósito e Status */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Preço de Venda (R$) <span className="text-red-500">*</span>
+                Preço (R$) <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -209,7 +320,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Estoque (unidades) <span className="text-red-500">*</span>
+                Estoque no depósito <span className="text-red-500">*</span>
               </label>
               <div className="flex items-center gap-1.5">
                 <button
@@ -238,102 +349,18 @@ function EdicaoProdutoFormContent({ id }: Props) {
               {erros.estoque && <span className="text-xs text-red-600 mt-1 block">{erros.estoque}</span>}
             </div>
 
-            <div className="flex flex-col justify-end">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-                Disponibilidade
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 select-none">
-                <input
-                  type="checkbox"
-                  checked={formData.disponivel !== false}
-                  onChange={(e) => handleInputChange('disponivel', e.target.checked)}
-                  className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
-                />
-                <span className="text-xs font-bold text-slate-800">Item Ativo / À Venda</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Aro, Tala, Furação */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Aro (pol) <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Status
               </label>
-              <input
-                type="number"
-                min="10"
-                max="30"
-                required
-                value={formData.aro || ''}
-                onChange={(e) => handleInputChange('aro', Number(e.target.value))}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
-              />
-              {erros.aro && <span className="text-xs text-red-600 mt-1 block">{erros.aro}</span>}
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Tala (pol) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                step="0.1"
-                min="3"
-                max="16"
-                required
-                value={formData.tala || ''}
-                onChange={(e) => handleInputChange('tala', Number(e.target.value))}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
-              />
-              {erros.tala && <span className="text-xs text-red-600 mt-1 block">{erros.tala}</span>}
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Furação (PCD) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.furacao || ''}
-                onChange={(e) => handleInputChange('furacao', e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
-              />
-              {erros.furacao && <span className="text-xs text-red-600 mt-1 block">{erros.furacao}</span>}
-            </div>
-          </div>
-
-          {/* SKU e Cabeça de Chave */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                SKU (Código Único) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.sku || ''}
-                onChange={(e) => handleInputChange('sku', e.target.value.toUpperCase())}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-blue-600 focus:bg-white uppercase transition-all"
-              />
-              {erros.sku && <span className="text-xs text-red-600 mt-1 block">{erros.sku}</span>}
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Cabeça de Chave <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.cabeca_chave || ''}
-                onChange={(e) => handleInputChange('cabeca_chave', e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
-              />
-              {erros.cabeca_chave && (
-                <span className="text-xs text-red-600 mt-1 block">{erros.cabeca_chave}</span>
-              )}
+              <select
+                value={formData.status || 'Ativo'}
+                onChange={(e) => handleInputChange('status', e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:border-blue-600 transition-all cursor-pointer"
+              >
+                <option value="Ativo">Ativo (Visível no catálogo)</option>
+                <option value="Inativo">Inativo (Pausado)</option>
+              </select>
             </div>
           </div>
 

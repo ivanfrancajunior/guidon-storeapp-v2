@@ -28,90 +28,49 @@ Sistema de catálogo visual e gestão de rodas automotivas de alta performance d
 
 ---
 
-## 📋 Schema do Produto (Zod e Turso)
+## 📋 Schema Oficial do Produto (15 Colunas na Planilha e Turso)
 
-| Campo | Tipo | Descrição |
-| :--- | :--- | :--- |
-| `id` | `TEXT` (UUID) | Chave primária única |
-| `titulo` | `TEXT` | Título comercial completo do produto |
-| `marca` | `TEXT` | Marca do fabricante (ex: `SCORRO`, `VOLCANO`, `TSW`, `BBS`) |
-| `modelo` | `TEXT` | Nome do modelo (ex: `S-250`, `Santa Monica`, `RPF1`) |
-| `aro` | `INTEGER` | Diâmetro nominal da roda (ex: `15`, `17`, `18`, `20`) |
-| `tala` | `REAL` | Largura da roda em polegadas (ex: `6.0`, `7.5`, `8.0`) |
-| `furacao` | `TEXT` | Padrão de furação / PCD (ex: `4x100`, `5x114.3`, `5x100`) |
-| `sku` | `TEXT` | Código único de identificação e chave de conflito de importação |
-| `cabeca_chave` | `TEXT` | Medida do parafuso/porca (ex: `17mm`, `19mm`, `21mm`, `Allen`) |
-| `preco` | `REAL` | Preço de venda em Reais (R$) |
-| `estoque` | `INTEGER` | Saldo físico de unidades em estoque |
-| `disponivel` | `INTEGER` (0/1) | Status de disponibilidade comercial (ativo/pausado) |
-| `imagens` | `TEXT` (JSON) | Array serializado com URLs públicas das fotos |
-| `descricao` | `TEXT` | Detalhes adicionais, acabamento e compatibilidade veicular |
-| `created_at` | `DATETIME` | Data e hora de inclusão |
-| `updated_at` | `DATETIME` | Data e hora da última modificação |
-
----
-
-## 🗺️ Rotas e Módulos da Aplicação
-
-### Páginas do Frontend
-- **`/`**: Catálogo visual principal com Sidebar de busca instantânea (debounce de 150ms), filtros combináveis (Marca, Aro, Tala, PCD, Chave, Estoque), alternador de visualização (Grade Visual vs. Tabela) e modal de consulta rápida (*Quick Preview*).
-- **`/produto/[sku]`**: Ficha técnica completa de engenharia, galeria de imagens 1:1 com seletor de miniaturas, preço em destaque e ações de edição/exclusão.
-- **`/novo`**: Cadastro de produtos com duas abas:
-  - **Aba 1 (Manual):** Cadastro com espelho em tempo real (*Live Preview* 1:1) e upload de múltiplas URLs de imagens.
-  - **Aba 2 (Importador de Planilha):** Drag-and-drop para arquivos `.xlsx`, `.xls` e `.csv`, validação prévia de linhas com Zod, tabela de conferência de erros e botão para baixar planilha modelo.
-- **`/editar/[id]`**: Edição dos dados da roda, ajuste rápido de estoque com botões `+` e `-`, e atualização otimista via React Query.
-
-### Endpoints de API REST
-- `GET /api/produtos`: Listagem com filtros dinâmicos via query params (`q`, `marca`, `aro`, `tala`, `furacao`, `cabeca_chave`, `disponivel`, `apenasEstoque`, `ordenacao`).
-- `POST /api/produtos`: Cadastro individual com validação via Zod.
-- `GET /api/produtos/[id]`: Consulta individual por ID ou SKU.
-- `PUT /api/produtos/[id]`: Atualização completa do produto.
-- `DELETE /api/produtos/[id]`: Exclusão de produto.
-- `POST /api/produtos/importar`: Inserção em lote atômica usando transação `turso.batch()` com resolução de conflito (`ON CONFLICT(sku) DO UPDATE`).
+| # | Coluna da Planilha | Campo no Banco | Tipo | Obrigatório? | Descrição / Exemplo |
+| :-: | :--- | :--- | :--- | :-: | :--- |
+| 1 | **SKU** | `sku` | `TEXT` | **Sim** | Código único de identificação (ex: `SCR-S250-15`) |
+| 2 | **Marca** | `marca` | `TEXT` | **Sim** | Fabricante da roda (ex: `SCORRO`, `VOLCANO`, `TSW`) |
+| 3 | **Modelo** | `modelo` | `TEXT` | **Sim** | Linha / Modelo (ex: `S-250`, `Santa Monica`, `RPF1`) |
+| 4 | **Aro** | `aro` | `INTEGER` | **Sim** | Diâmetro em polegadas (ex: `15`, `17`, `18`, `20`) |
+| 5 | **Tala** | `tala` | `REAL` | **Sim** | Largura da roda em polegadas (ex: `6.0`, `7.5`, `8.0`) |
+| 6 | **Furação** | `furacao` | `TEXT` | **Sim** | Padrão PCD (ex: `4x100`, `5x114.3`, `5x100`) |
+| 7 | **Cabeça de Chave** | `cabeca_chave` | `TEXT` | **Sim** | Medida do parafuso (ex: `17mm`, `19mm`, `21mm`) |
+| 8 | **Título** | `titulo` | `TEXT` | **Sim** | Nome de apresentação do produto |
+| 9 | **Acabamento** | `acabamento` | `TEXT` | Não | Acabamento estético (ex: `Diamantada Prata`, `Grafite Fosco`) |
+| 10 | **Estoque no depósito** | `estoque` | `INTEGER` | **Sim** | Quantidade física disponível em depósito |
+| 11 | **Preço** | `preco` | `REAL` | **Sim** | Preço de venda (R$) |
+| 12 | **Condição** | `condicao` | `TEXT` | Não | `Nova`, `Seminova`, `Usada` ou `Restaurada` |
+| 13 | **Descrição** | `descricao` | `TEXT` | Não | Detalhes adicionais e notas de aplicação |
+| 14 | **Status** | `status` | `TEXT` | **Sim** | `Ativo` ou `Inativo` |
+| 15 | **Imagens** | `imagens` | `TEXT` (JSON) | **Sim** | URLs das fotos separadas por `;` ou `,` |
 
 ---
 
-## 📊 Modelo para Importação de Planilha
+## 📊 Arquivo Modelo para Importação
 
-Um arquivo modelo já está disponível na raiz do repositório: [`modelo_importacao_rodas.xlsx`](file:///c:/Users/Junior/Desktop/store-catalog/modelo_importacao_rodas.xlsx).
+Um arquivo Excel pronto com exatamente esses 15 cabeçalhos está disponível na raiz:
+- [`modelo_importacao_rodas.xlsx`](file:///c:/Users/Junior/Desktop/store-catalog/modelo_importacao_rodas.xlsx)
 
-### Estrutura das Colunas:
-```csv
-titulo,marca,modelo,aro,tala,furacao,sku,cabeca_chave,preco,estoque,disponivel,imagens,descricao
-Roda Scorro S-250 Aro 15,SCORRO,S-250,15,6.0,4x100,SCR-S250-15,17mm,2890.00,8,SIM,https://exemplo.com/foto1.jpg;https://exemplo.com/foto2.jpg,Roda diamantada esportiva
-```
-
-> **Dica para Imagens:** O campo `imagens` suporta múltiplas URLs separadas por ponto-e-vírgula (`;`) ou vírgula (`,`).
+Você pode baixá-lo também diretamente pela tela **`/novo` -> Aba "Importar da Planilha"**.
 
 ---
 
 ## 🛠️ Como Executar o Projeto Localmente
 
-### 1. Pré-requisitos
-- Node.js versão 18 ou superior
-- Gerenciador de pacotes npm
-
-### 2. Configuração de Variáveis de Ambiente
-Crie ou edite o arquivo `.env` na raiz do projeto:
-```env
-TURSO_DATABASE_URL="file:local.db"
-TURSO_AUTH_TOKEN=""
-```
-*(Para utilizar o banco Turso na nuvem, basta informar a URL `libsql://seu-banco.turso.io` e o respectivo token).*
-
-### 3. Instalar Dependências
 ```bash
+# Instalar dependências
 npm install
-```
 
-### 4. Executar em Modo de Desenvolvimento
-```bash
+# Modo desenvolvimento
 npm run dev
-```
-Acesse em seu navegador: [http://localhost:4321](http://localhost:4321)
 
-### 5. Build e Preview de Produção
-```bash
+# Build de produção
 npm run build
+
+# Preview da produção
 npm run preview
 ```

@@ -8,19 +8,21 @@ export function CadastroManualForm() {
   const { criarProduto } = useProdutoMutations();
 
   const [formData, setFormData] = useState<Partial<Produto>>({
-    titulo: '',
+    sku: '',
     marca: '',
     modelo: '',
     aro: 15,
     tala: 6.0,
     furacao: '4x100',
-    sku: '',
     cabeca_chave: '17mm',
-    preco: 0,
+    titulo: '',
+    acabamento: 'Padrão',
     estoque: 4,
-    disponivel: true,
-    imagens: [''],
+    preco: 0,
+    condicao: 'Nova',
     descricao: '',
+    status: 'Ativo',
+    imagens: [''],
   });
 
   const [erros, setErros] = useState<Record<string, string>>({});
@@ -97,7 +99,7 @@ export function CadastroManualForm() {
       {/* Formulário à Esquerda */}
       <div className="lg:col-span-7 bg-white border border-slate-200/90 rounded-[20px] p-6 sm:p-8 shadow-xs">
         <h2 className="text-lg font-extrabold text-slate-900 mb-6 pb-3 border-b border-slate-100">
-          Dados Técnicos e Comerciais da Roda
+          Dados do Produto e Estoque
         </h2>
 
         {sucesso && (
@@ -130,8 +132,23 @@ export function CadastroManualForm() {
             {erros.titulo && <span className="text-xs text-red-600 mt-1 block">{erros.titulo}</span>}
           </div>
 
-          {/* Marca e Modelo */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* SKU, Marca e Modelo */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                SKU (Código Único) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.sku || ''}
+                onChange={(e) => handleInputChange('sku', e.target.value.toUpperCase())}
+                placeholder="Ex: SCR-S250-15"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-blue-600 focus:bg-white uppercase transition-all"
+              />
+              {erros.sku && <span className="text-xs text-red-600 mt-1 block">{erros.sku}</span>}
+            </div>
+
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
                 Marca <span className="text-red-500">*</span>
@@ -163,62 +180,43 @@ export function CadastroManualForm() {
             </div>
           </div>
 
-          {/* Preço, Quantidade em Estoque e Disponibilidade */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
+          {/* Acabamento e Condição */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Preço de Venda (R$) <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                Acabamento
               </label>
               <input
-                type="number"
-                step="0.01"
-                min="0"
-                required
-                value={formData.preco || ''}
-                onChange={(e) => handleInputChange('preco', Number(e.target.value))}
-                placeholder="Ex: 2890.00"
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 transition-all"
+                type="text"
+                value={formData.acabamento || ''}
+                onChange={(e) => handleInputChange('acabamento', e.target.value)}
+                placeholder="Ex: Diamantada, Grafite Fosco, Dourado"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
               />
-              {erros.preco && <span className="text-xs text-red-600 mt-1 block">{erros.preco}</span>}
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                Estoque (unidades) <span className="text-red-500">*</span>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+                Condição
               </label>
-              <input
-                type="number"
-                min="0"
-                required
-                value={formData.estoque ?? 0}
-                onChange={(e) => handleInputChange('estoque', Number(e.target.value))}
-                placeholder="Ex: 4"
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 transition-all"
-              />
-              {erros.estoque && <span className="text-xs text-red-600 mt-1 block">{erros.estoque}</span>}
-            </div>
-
-            <div className="flex flex-col justify-end">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-                Disponibilidade
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 select-none">
-                <input
-                  type="checkbox"
-                  checked={formData.disponivel !== false}
-                  onChange={(e) => handleInputChange('disponivel', e.target.checked)}
-                  className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
-                />
-                <span className="text-xs font-bold text-slate-800">Item Ativo / À Venda</span>
-              </label>
+              <select
+                value={formData.condicao || 'Nova'}
+                onChange={(e) => handleInputChange('condicao', e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 focus:bg-white transition-all cursor-pointer"
+              >
+                <option value="Nova">Nova</option>
+                <option value="Seminova">Seminova</option>
+                <option value="Usada">Usada</option>
+                <option value="Restaurada">Restaurada</option>
+              </select>
             </div>
           </div>
 
-          {/* Aro, Tala, Furação */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Aro, Tala, Furação, Cabeça de Chave */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Aro (pol) <span className="text-red-500">*</span>
+                Aro <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -235,7 +233,7 @@ export function CadastroManualForm() {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Tala (pol) <span className="text-red-500">*</span>
+                Tala <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -245,7 +243,7 @@ export function CadastroManualForm() {
                 required
                 value={formData.tala || ''}
                 onChange={(e) => handleInputChange('tala', Number(e.target.value))}
-                placeholder="Ex: 6.0 ou 7.5"
+                placeholder="Ex: 6.0"
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
               />
               {erros.tala && <span className="text-xs text-red-600 mt-1 block">{erros.tala}</span>}
@@ -253,52 +251,84 @@ export function CadastroManualForm() {
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Furação (PCD) <span className="text-red-500">*</span>
+                Furação <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.furacao || ''}
                 onChange={(e) => handleInputChange('furacao', e.target.value)}
-                placeholder="Ex: 4x100, 5x114.3"
+                placeholder="Ex: 4x100"
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
               />
               {erros.furacao && <span className="text-xs text-red-600 mt-1 block">{erros.furacao}</span>}
             </div>
-          </div>
-
-          {/* SKU e Cabeça de Chave */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                SKU (Código Único) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                required
-                value={formData.sku || ''}
-                onChange={(e) => handleInputChange('sku', e.target.value.toUpperCase())}
-                placeholder="Ex: SCR-S250-15"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-blue-600 focus:bg-white uppercase transition-all"
-              />
-              {erros.sku && <span className="text-xs text-red-600 mt-1 block">{erros.sku}</span>}
-            </div>
 
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
-                Cabeça de Chave <span className="text-red-500">*</span>
+                Cabeça Chave <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.cabeca_chave || ''}
                 onChange={(e) => handleInputChange('cabeca_chave', e.target.value)}
-                placeholder="Ex: 17mm, 19mm, 21mm"
+                placeholder="Ex: 17mm"
                 className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
               />
               {erros.cabeca_chave && (
                 <span className="text-xs text-red-600 mt-1 block">{erros.cabeca_chave}</span>
               )}
+            </div>
+          </div>
+
+          {/* Preço, Estoque no Depósito e Status */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Preço (R$) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                required
+                value={formData.preco || ''}
+                onChange={(e) => handleInputChange('preco', Number(e.target.value))}
+                placeholder="Ex: 2890.00"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 transition-all"
+              />
+              {erros.preco && <span className="text-xs text-red-600 mt-1 block">{erros.preco}</span>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Estoque no depósito <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                min="0"
+                required
+                value={formData.estoque ?? 0}
+                onChange={(e) => handleInputChange('estoque', Number(e.target.value))}
+                placeholder="Ex: 4"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 transition-all"
+              />
+              {erros.estoque && <span className="text-xs text-red-600 mt-1 block">{erros.estoque}</span>}
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Status
+              </label>
+              <select
+                value={formData.status || 'Ativo'}
+                onChange={(e) => handleInputChange('status', e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:border-blue-600 transition-all cursor-pointer"
+              >
+                <option value="Ativo">Ativo (Visível no catálogo)</option>
+                <option value="Inativo">Inativo (Pausado)</option>
+              </select>
             </div>
           </div>
 
@@ -352,7 +382,7 @@ export function CadastroManualForm() {
               rows={3}
               value={formData.descricao || ''}
               onChange={(e) => handleInputChange('descricao', e.target.value)}
-              placeholder="Informações adicionais sobre acabamento, compatibilidade veicular, furação e pintura..."
+              placeholder="Informações adicionais sobre offset, compatibilidade veicular, furação e pintura..."
               className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
             />
           </div>

@@ -14,7 +14,12 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
   const arosDisponiveis = Array.from(new Set(produtos.map((p) => p.aro))).sort((a, b) => a - b);
   const talasDisponiveis = Array.from(new Set(produtos.map((p) => p.tala))).sort((a, b) => a - b);
   const furacoesDisponiveis = Array.from(new Set(produtos.map((p) => p.furacao))).sort();
-  const cabecasChaveDisponiveis = Array.from(new Set(produtos.map((p) => p.cabeca_chave))).sort();
+  const acabamentosDisponiveis = Array.from(
+    new Set(produtos.map((p) => p.acabamento || 'Padrão').filter((v) => v.length > 0))
+  ).sort();
+  const condicoesDisponiveis = Array.from(
+    new Set(produtos.map((p) => p.condicao || 'Nova').filter((v) => v.length > 0))
+  ).sort();
 
   const handleSearch = (q: string) => {
     onFiltrosChange({ ...filtros, q });
@@ -28,7 +33,9 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
       tala: undefined,
       furacao: undefined,
       cabeca_chave: undefined,
-      disponivel: undefined,
+      acabamento: undefined,
+      condicao: undefined,
+      status: undefined,
       apenasEstoque: false,
       ordenacao: 'recentes',
     });
@@ -41,7 +48,9 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
     filtros.tala ||
     filtros.furacao ||
     filtros.cabeca_chave ||
-    filtros.disponivel !== undefined ||
+    filtros.acabamento ||
+    filtros.condicao ||
+    filtros.status !== undefined ||
     filtros.apenasEstoque
   );
 
@@ -64,13 +73,44 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
         </div>
       </div>
 
-      {/* Filtro Rápido de Estoque e Disponibilidade */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col gap-2.5">
-        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-0.5 block">
-          Disponibilidade & Estoque
+      {/* Filtro Rápido de Status e Estoque */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col gap-3">
+        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block">
+          Status & Estoque
         </span>
         
-        <label className="flex items-center gap-2.5 text-xs font-semibold text-slate-800 cursor-pointer select-none">
+        {/* Toggle Status Ativo / Inativo */}
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+          <button
+            type="button"
+            onClick={() => onFiltrosChange({ ...filtros, status: undefined })}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              filtros.status === undefined ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600'
+            }`}
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            onClick={() => onFiltrosChange({ ...filtros, status: 'Ativo' })}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              filtros.status === 'Ativo' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600'
+            }`}
+          >
+            Ativos
+          </button>
+          <button
+            type="button"
+            onClick={() => onFiltrosChange({ ...filtros, status: 'Inativo' })}
+            className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              filtros.status === 'Inativo' ? 'bg-slate-800 text-white shadow-xs' : 'text-slate-600'
+            }`}
+          >
+            Inativos
+          </button>
+        </div>
+
+        <label className="flex items-center gap-2.5 text-xs font-semibold text-slate-800 cursor-pointer select-none pt-1 border-t border-slate-100">
           <input
             type="checkbox"
             checked={!!filtros.apenasEstoque}
@@ -84,7 +124,7 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
           />
           <span className="flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            Apenas em Estoque / Pronta Entrega
+            Apenas com saldo em depósito
           </span>
         </label>
       </div>
@@ -223,6 +263,39 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
         </div>
       </div>
 
+      {/* Acordeão / Grupo: Condição */}
+      {condicoesDisponiveis.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
+          <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 block">
+            Condição
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            {condicoesDisponiveis.map((cond) => {
+              const isSelected = filtros.condicao === cond;
+              return (
+                <button
+                  key={cond}
+                  type="button"
+                  onClick={() =>
+                    onFiltrosChange({
+                      ...filtros,
+                      condicao: isSelected ? undefined : cond,
+                    })
+                  }
+                  className={`text-xs px-2.5 py-1 rounded-xl border transition-all ${
+                    isSelected
+                      ? 'bg-slate-900 border-slate-900 text-white font-bold'
+                      : 'bg-slate-50 border-slate-200 hover:border-slate-300 text-slate-700'
+                  }`}
+                >
+                  {cond}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Acordeão / Grupo: Tala */}
       {talasDisponiveis.length > 0 && (
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
@@ -257,39 +330,6 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
                   >
                     {count}
                   </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Acordeão / Grupo: Cabeça de Chave */}
-      {cabecasChaveDisponiveis.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 block">
-            Cabeça de Chave
-          </span>
-          <div className="flex flex-wrap gap-1.5">
-            {cabecasChaveDisponiveis.map((chave) => {
-              const isSelected = filtros.cabeca_chave === chave;
-              return (
-                <button
-                  key={chave}
-                  type="button"
-                  onClick={() =>
-                    onFiltrosChange({
-                      ...filtros,
-                      cabeca_chave: isSelected ? undefined : chave,
-                    })
-                  }
-                  className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
-                    isSelected
-                      ? 'bg-blue-600 border-blue-600 text-white font-bold'
-                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  {chave}
                 </button>
               );
             })}

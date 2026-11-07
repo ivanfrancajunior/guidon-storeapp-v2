@@ -18,9 +18,9 @@ export function ProdutoCard({ produto, onPreview }: Props) {
   }).format(produto.preco || 0);
 
   // Status de disponibilidade e estoque
-  const isDisponivel = produto.disponivel !== false && (produto.estoque ?? 0) > 0;
+  const isAtivo = produto.status === 'Ativo';
   const isEsgotado = (produto.estoque ?? 0) === 0;
-  const isIndisponivelManual = produto.disponivel === false;
+  const isDisponivel = isAtivo && !isEsgotado;
 
   return (
     <article className="group bg-white border border-slate-200/90 rounded-[18px] overflow-hidden flex flex-col shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 relative">
@@ -39,7 +39,7 @@ export function ProdutoCard({ produto, onPreview }: Props) {
           src={capa}
           alt={produto.titulo}
           className={`w-full h-full aspect-square object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-200 ${
-            !isDisponivel ? 'opacity-75 grayscale-25' : ''
+            !isAtivo ? 'opacity-70 grayscale' : isEsgotado ? 'opacity-85' : ''
           }`}
           loading="lazy"
         />
@@ -49,22 +49,30 @@ export function ProdutoCard({ produto, onPreview }: Props) {
           {produto.marca}
         </span>
 
-        {/* Badge de Disponibilidade no Topo Direito */}
-        <div className="absolute top-3 right-3">
-          {isDisponivel ? (
-            <span className="inline-flex items-center gap-1 bg-emerald-500/90 backdrop-blur-sm text-white text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full shadow-xs">
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-              Disponível
+        {/* Badge de Status no Topo Direito */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5">
+          {/* Condição */}
+          {produto.condicao && produto.condicao !== 'Nova' && (
+            <span className="bg-amber-100/90 text-amber-900 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full shadow-xs">
+              {produto.condicao}
             </span>
-          ) : isIndisponivelManual ? (
+          )}
+
+          {/* Status Ativo / Inativo / Esgotado */}
+          {!isAtivo ? (
             <span className="inline-flex items-center gap-1 bg-slate-800/90 backdrop-blur-sm text-white text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full shadow-xs">
               <XCircle className="w-3 h-3" />
-              Pausado
+              Inativo
             </span>
-          ) : (
+          ) : isEsgotado ? (
             <span className="inline-flex items-center gap-1 bg-red-600/90 backdrop-blur-sm text-white text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full shadow-xs">
               <AlertTriangle className="w-3 h-3" />
               Esgotado
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 bg-emerald-500/90 backdrop-blur-sm text-white text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              Ativo
             </span>
           )}
         </div>
@@ -89,7 +97,9 @@ export function ProdutoCard({ produto, onPreview }: Props) {
           </a>
           <div className="flex items-center justify-between text-xs text-slate-500 font-mono mt-0.5">
             <span>SKU: {produto.sku}</span>
-            <span className="font-sans text-[11px] font-semibold text-slate-400">{produto.modelo}</span>
+            <span className="font-sans text-[11px] font-semibold text-slate-400">
+              {produto.modelo} • {produto.acabamento || 'Padrão'}
+            </span>
           </div>
         </div>
 
@@ -104,19 +114,22 @@ export function ProdutoCard({ produto, onPreview }: Props) {
           <span className="text-[11px] font-bold px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full border border-blue-100">
             {produto.furacao}
           </span>
+          <span className="text-[11px] font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">
+            {produto.cabeca_chave}
+          </span>
         </div>
 
-        {/* Preço e Saldo de Estoque */}
+        {/* Preço e Saldo de Estoque no Depósito */}
         <div className="flex items-end justify-between pt-2.5 mt-auto border-t border-slate-100">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase font-semibold text-slate-400">Preço do Jogo/Un</span>
+            <span className="text-[10px] uppercase font-semibold text-slate-400">Preço</span>
             <span className="text-base font-extrabold text-slate-900 tracking-tight">
               {precoFormatado}
             </span>
           </div>
 
           <div className="flex flex-col items-end">
-            <span className="text-[10px] uppercase font-semibold text-slate-400">Estoque</span>
+            <span className="text-[10px] uppercase font-semibold text-slate-400">Depósito</span>
             <span
               className={`text-xs font-bold ${
                 isEsgotado

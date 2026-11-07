@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, ExternalLink, Edit3, ChevronLeft, ChevronRight, CheckCircle2, AlertTriangle, XCircle, Box, DollarSign } from 'lucide-react';
+import { X, ExternalLink, Edit3, ChevronLeft, ChevronRight, CheckCircle2, AlertTriangle, XCircle, Box, DollarSign, Sparkles } from 'lucide-react';
 import type { Produto } from '@/lib/schemas/produto';
 
 interface Props {
@@ -27,7 +27,7 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
     currency: 'BRL',
   }).format(produto.preco || 0);
 
-  const isDisponivel = produto.disponivel !== false && (produto.estoque ?? 0) > 0;
+  const isAtivo = produto.status === 'Ativo';
   const isEsgotado = (produto.estoque ?? 0) === 0;
 
   const nextImg = () => setActiveImgIndex((prev) => (prev + 1) % imagens.length);
@@ -45,20 +45,23 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
         {/* Top Header */}
         <div className="p-5 pb-3 flex justify-between items-start border-b border-slate-100">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-md">
                 SKU: {produto.sku}
               </span>
               <span className="text-xs font-bold uppercase text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
                 {produto.marca}
               </span>
-              {isDisponivel ? (
+              <span className="text-xs font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">
+                {produto.condicao || 'Nova'}
+              </span>
+              {isAtivo ? (
                 <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Disponível
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Ativo
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-red-700 bg-red-50 px-2.5 py-0.5 rounded-full border border-red-200">
-                  <AlertTriangle className="w-3.5 h-3.5 text-red-600" /> {isEsgotado ? 'Esgotado' : 'Indisponível'}
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
+                  <XCircle className="w-3.5 h-3.5 text-slate-500" /> Inativo
                 </span>
               )}
             </div>
@@ -79,7 +82,9 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
             <img
               src={imagens[activeImgIndex]}
               alt={produto.titulo}
-              className="w-full h-full aspect-square object-contain drop-shadow-md select-none transition-all duration-200"
+              className={`w-full h-full aspect-square object-contain drop-shadow-md select-none transition-all duration-200 ${
+                !isAtivo ? 'opacity-70 grayscale' : ''
+              }`}
             />
             {imagens.length > 1 && (
               <>
@@ -104,11 +109,11 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
             )}
           </div>
 
-          {/* Destaque Comercial: Preço e Saldo em Estoque */}
+          {/* Destaque Comercial: Preço e Estoque no Depósito */}
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-slate-900 text-white p-3.5 rounded-2xl flex items-center justify-between">
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Preço de Venda</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Preço</span>
                 <span className="text-lg font-extrabold text-white">{precoFormatado}</span>
               </div>
               <DollarSign className="w-5 h-5 text-emerald-400" />
@@ -116,7 +121,7 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
 
             <div className="bg-slate-50 border border-slate-200 p-3.5 rounded-2xl flex items-center justify-between">
               <div>
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Saldo em Estoque</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">Estoque no Depósito</span>
                 <span className={`text-lg font-extrabold ${isEsgotado ? 'text-red-600' : 'text-slate-900'}`}>
                   {produto.estoque} unidades
                 </span>
@@ -128,16 +133,16 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
           {/* Especificações Técnicas Rápidas */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl">
-              <span className="text-slate-400 block font-semibold mb-0.5">Aro</span>
-              <span className="font-extrabold text-slate-900 text-sm">{produto.aro}"</span>
-            </div>
-            <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl">
-              <span className="text-slate-400 block font-semibold mb-0.5">Tala</span>
-              <span className="font-extrabold text-slate-900 text-sm">{produto.tala}"</span>
+              <span className="text-slate-400 block font-semibold mb-0.5">Aro / Tala</span>
+              <span className="font-extrabold text-slate-900 text-sm">Aro {produto.aro}" • Tala {produto.tala}"</span>
             </div>
             <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl">
               <span className="text-slate-400 block font-semibold mb-0.5">Furação</span>
               <span className="font-extrabold text-slate-900 text-sm">{produto.furacao}</span>
+            </div>
+            <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl">
+              <span className="text-slate-400 block font-semibold mb-0.5">Acabamento</span>
+              <span className="font-extrabold text-slate-900 text-sm">{produto.acabamento || 'Padrão'}</span>
             </div>
             <div className="bg-slate-50 border border-slate-200/60 p-3 rounded-xl">
               <span className="text-slate-400 block font-semibold mb-0.5">Cabeça Chave</span>

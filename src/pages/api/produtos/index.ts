@@ -13,7 +13,9 @@ export const GET: APIRoute = async ({ request }) => {
   const tala = url.searchParams.get('tala');
   const furacao = url.searchParams.get('furacao');
   const cabeca_chave = url.searchParams.get('cabeca_chave');
-  const disponivel = url.searchParams.get('disponivel');
+  const acabamento = url.searchParams.get('acabamento');
+  const condicao = url.searchParams.get('condicao');
+  const status = url.searchParams.get('status');
   const apenasEstoque = url.searchParams.get('apenasEstoque') === 'true';
   const ordenacao = url.searchParams.get('ordenacao') || 'recentes';
 
@@ -32,10 +34,12 @@ export const GET: APIRoute = async ({ request }) => {
         LOWER(furacao) LIKE ? OR
         CAST(aro AS TEXT) LIKE ? OR
         CAST(tala AS TEXT) LIKE ? OR
-        LOWER(cabeca_chave) LIKE ?
+        LOWER(cabeca_chave) LIKE ? OR
+        LOWER(acabamento) LIKE ? OR
+        LOWER(condicao) LIKE ?
       )`;
       const wild = `%${term.toLowerCase()}%`;
-      args.push(wild, wild, wild, wild, wild, wild, wild, wild);
+      args.push(wild, wild, wild, wild, wild, wild, wild, wild, wild, wild);
     });
   }
 
@@ -64,13 +68,23 @@ export const GET: APIRoute = async ({ request }) => {
     args.push(cabeca_chave);
   }
 
-  if (disponivel !== null && disponivel !== undefined && disponivel !== '') {
-    sql += ' AND disponivel = ?';
-    args.push(disponivel === 'true' || disponivel === '1' ? 1 : 0);
+  if (acabamento) {
+    sql += ' AND LOWER(acabamento) = LOWER(?)';
+    args.push(acabamento);
+  }
+
+  if (condicao) {
+    sql += ' AND LOWER(condicao) = LOWER(?)';
+    args.push(condicao);
+  }
+
+  if (status) {
+    sql += ' AND LOWER(status) = LOWER(?)';
+    args.push(status);
   }
 
   if (apenasEstoque) {
-    sql += ' AND estoque > 0 AND disponivel = 1';
+    sql += " AND estoque > 0 AND status = 'Ativo'";
   }
 
   // Ordenação
@@ -105,7 +119,9 @@ export const GET: APIRoute = async ({ request }) => {
         tala: Number(row.tala),
         preco: Number(row.preco ?? 0),
         estoque: Number(row.estoque ?? 0),
-        disponivel: Boolean(row.disponivel === 1 || row.disponivel === true),
+        status: (row.status as string) || 'Ativo',
+        condicao: (row.condicao as string) || 'Nova',
+        acabamento: (row.acabamento as string) || 'Padrão',
         imagens: imagensArr,
       };
     });
@@ -133,23 +149,25 @@ export const POST: APIRoute = async ({ request }) => {
     const imagensJson = JSON.stringify(validated.imagens);
 
     await turso.execute({
-      sql: `INSERT INTO produtos (id, titulo, marca, modelo, aro, tala, furacao, sku, cabeca_chave, preco, estoque, disponivel, imagens, descricao)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      sql: `INSERT INTO produtos (id, sku, marca, modelo, aro, tala, furacao, cabeca_chave, titulo, acabamento, estoque, preco, condicao, descricao, status, imagens)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [
         id,
-        validated.titulo,
+        validated.sku,
         validated.marca,
         validated.modelo,
         validated.aro,
         validated.tala,
         validated.furacao,
-        validated.sku,
         validated.cabeca_chave,
-        validated.preco,
-        validated.estoque,
-        validated.disponivel ? 1 : 0,
-        imagensJson,
+        validated.titulo,
+        validated.acabamento ?? 'Padrão',
+        validated.estoque ?? 0,
+        validated.preco ?? 0,
+        validated.condicao ?? 'Nova',
         validated.descricao ?? '',
+        validated.status ?? 'Ativo',
+        imagensJson,
       ],
     });
 
