@@ -74,3 +74,50 @@ npm run build
 # Preview da produção
 npm run preview
 ```
+
+---
+
+## 🔐 Variaveis de Ambiente
+
+Copie `.env.example` para `.env` e configure:
+
+```env
+TURSO_DATABASE_URL="libsql://seu-banco.turso.io"
+TURSO_AUTH_TOKEN="seu-token-turso"
+CLOUDINARY_CLOUD_NAME="seu-cloud-name"
+CLOUDINARY_API_KEY="sua-api-key"
+CLOUDINARY_API_SECRET="seu-api-secret"
+```
+
+- `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN`: acesso ao banco Turso.
+- As credenciais Cloudinary sao usadas pelo servidor para uploads seguros; nunca exponha o segredo em codigo ou variaveis `PUBLIC_*`.
+- Para desenvolvimento local, `TURSO_DATABASE_URL="file:local.db"` permite usar SQLite local.
+
+## 🖼️ Upload de Imagens
+
+Os formularios de cadastro e edicao permitem selecionar varias imagens JPG, PNG ou WEBP por vez.
+
+O upload ocorre pelo endpoint interno `/api/imagens/cloudinary`, que:
+
+- valida tipo e tamanho dos arquivos;
+- limita cada arquivo a 8 MB;
+- envia a imagem ao Cloudinary;
+- redimensiona para ate 1600 x 1600 px;
+- retorna URLs otimizadas para serem gravadas no produto.
+
+## ☁️ Deploy na Netlify
+
+O projeto usa SSR com o adaptador oficial da Netlify para Astro.
+
+1. Importar o repositorio na Netlify.
+2. Usar o comando de build `npm run build`.
+3. Publicar o diretorio `dist` (configurado em `netlify.toml`).
+4. Cadastrar as variaveis de ambiente da Turso e Cloudinary no painel da Netlify:
+   - `TURSO_DATABASE_URL`
+   - `TURSO_AUTH_TOKEN`
+   - `CLOUDINARY_CLOUD_NAME`
+   - `CLOUDINARY_API_KEY`
+   - `CLOUDINARY_API_SECRET`
+5. Fazer o deploy.
+
+Nunca faca commit do arquivo `.env`, dos arquivos `base_final*.xlsx` ou de credenciais reais.

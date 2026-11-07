@@ -4,7 +4,9 @@ import { LiveCardPreview } from './LiveCardPreview';
 import { useProdutoDetailQuery } from '@/hooks/useProdutosQuery';
 import { useProdutoMutations } from '@/hooks/useProdutoMutations';
 import { ProdutoSchema, type Produto } from '@/lib/schemas/produto';
+import { IMAGEM_FALLBACK_RODA } from '@/lib/assets';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { UploadImagemCloudinary } from './UploadImagemCloudinary';
 
 interface Props {
   id: string;
@@ -87,7 +89,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
 
     const parseResult = ProdutoSchema.safeParse({
       ...formData,
-      imagens: cleanedImgs.length > 0 ? cleanedImgs : ['https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80'],
+      imagens: cleanedImgs.length > 0 ? cleanedImgs : [IMAGEM_FALLBACK_RODA],
     });
 
     if (!parseResult.success) {
@@ -124,7 +126,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
             <span className="text-[10px] font-mono text-slate-400">ID: {id}</span>
             <h2 className="text-lg font-extrabold text-slate-900">Editar Especificações e Estoque</h2>
           </div>
-          <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+          <span className="text-xs font-bold uppercase tracking-wider text-yellow-400 bg-yellow-50 px-3 py-1 rounded-full">
             {formData.marca}
           </span>
         </div>
@@ -153,7 +155,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
               required
               value={formData.titulo || ''}
               onChange={(e) => handleInputChange('titulo', e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
             />
             {erros.titulo && <span className="text-xs text-red-600 mt-1 block">{erros.titulo}</span>}
           </div>
@@ -169,7 +171,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
                 required
                 value={formData.sku || ''}
                 onChange={(e) => handleInputChange('sku', e.target.value.toUpperCase())}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-blue-600 focus:bg-white uppercase transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-yellow-400 focus:bg-white uppercase transition-all"
               />
               {erros.sku && <span className="text-xs text-red-600 mt-1 block">{erros.sku}</span>}
             </div>
@@ -183,7 +185,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
                 required
                 value={formData.marca || ''}
                 onChange={(e) => handleInputChange('marca', e.target.value.toUpperCase())}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white uppercase transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white uppercase transition-all"
               />
               {erros.marca && <span className="text-xs text-red-600 mt-1 block">{erros.marca}</span>}
             </div>
@@ -197,7 +199,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
                 required
                 value={formData.modelo || ''}
                 onChange={(e) => handleInputChange('modelo', e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
               {erros.modelo && <span className="text-xs text-red-600 mt-1 block">{erros.modelo}</span>}
             </div>
@@ -213,7 +215,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
                 type="text"
                 value={formData.acabamento || ''}
                 onChange={(e) => handleInputChange('acabamento', e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
             </div>
 
@@ -224,7 +226,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
               <select
                 value={formData.condicao || 'Nova'}
                 onChange={(e) => handleInputChange('condicao', e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 focus:bg-white transition-all cursor-pointer"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-yellow-400 focus:bg-white transition-all cursor-pointer"
               >
                 <option value="Nova">Nova</option>
                 <option value="Seminova">Seminova</option>
@@ -247,7 +249,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
                 required
                 value={formData.aro || ''}
                 onChange={(e) => handleInputChange('aro', Number(e.target.value))}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
               {erros.aro && <span className="text-xs text-red-600 mt-1 block">{erros.aro}</span>}
             </div>
@@ -264,7 +266,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
                 required
                 value={formData.tala || ''}
                 onChange={(e) => handleInputChange('tala', Number(e.target.value))}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
               {erros.tala && <span className="text-xs text-red-600 mt-1 block">{erros.tala}</span>}
             </div>
@@ -278,7 +280,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
                 required
                 value={formData.furacao || ''}
                 onChange={(e) => handleInputChange('furacao', e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
               {erros.furacao && <span className="text-xs text-red-600 mt-1 block">{erros.furacao}</span>}
             </div>
@@ -292,7 +294,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
                 required
                 value={formData.cabeca_chave || ''}
                 onChange={(e) => handleInputChange('cabeca_chave', e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
               {erros.cabeca_chave && (
                 <span className="text-xs text-red-600 mt-1 block">{erros.cabeca_chave}</span>
@@ -313,7 +315,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
                 required
                 value={formData.preco || ''}
                 onChange={(e) => handleInputChange('preco', Number(e.target.value))}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 transition-all"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-yellow-400 transition-all"
               />
               {erros.preco && <span className="text-xs text-red-600 mt-1 block">{erros.preco}</span>}
             </div>
@@ -336,7 +338,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
                   required
                   value={formData.estoque ?? 0}
                   onChange={(e) => handleInputChange('estoque', Number(e.target.value))}
-                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-center text-sm font-bold focus:outline-none focus:border-blue-600 transition-all"
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-center text-sm font-bold focus:outline-none focus:border-yellow-400 transition-all"
                 />
                 <button
                   type="button"
@@ -356,7 +358,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
               <select
                 value={formData.status || 'Ativo'}
                 onChange={(e) => handleInputChange('status', e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:border-blue-600 transition-all cursor-pointer"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:border-yellow-400 transition-all cursor-pointer"
               >
                 <option value="Ativo">Ativo (Visível no catálogo)</option>
                 <option value="Inativo">Inativo (Pausado)</option>
@@ -373,20 +375,29 @@ function EdicaoProdutoFormContent({ id }: Props) {
               <button
                 type="button"
                 onClick={handleAddImageUrl}
-                className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+                className="inline-flex items-center gap-1 text-xs font-bold text-yellow-400 hover:text-yellow-700"
               >
                 <Plus className="w-3.5 h-3.5" /> Adicionar foto
               </button>
             </div>
 
             <div className="space-y-2">
+              <UploadImagemCloudinary
+                sku={formData.sku}
+                onUpload={(urls) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    imagens: [...(prev.imagens || []).filter((imagem) => imagem.trim()), ...urls],
+                  }));
+                }}
+              />
               {(formData.imagens || ['']).map((url, idx) => (
                 <div key={idx} className="flex items-center gap-2">
                   <input
                     type="url"
                     value={url}
                     onChange={(e) => handleUpdateImageUrl(idx, e.target.value)}
-                    className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                    className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
                   />
                   {(formData.imagens || []).length > 1 && (
                     <button
@@ -412,7 +423,7 @@ function EdicaoProdutoFormContent({ id }: Props) {
               rows={3}
               value={formData.descricao || ''}
               onChange={(e) => handleInputChange('descricao', e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
             />
           </div>
 

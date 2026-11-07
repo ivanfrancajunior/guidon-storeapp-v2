@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Produto } from '@/lib/schemas/produto';
+import { IMAGEM_FALLBACK_RODA } from '@/lib/assets';
 
 interface Props {
   dados: Partial<Produto>;
@@ -9,7 +10,7 @@ export function LiveCardPreview({ dados }: Props) {
   const capa =
     dados.imagens && dados.imagens.length > 0 && dados.imagens[0].trim().length > 0
       ? dados.imagens[0]
-      : 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80';
+      : IMAGEM_FALLBACK_RODA;
 
   const precoFormatado = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -41,7 +42,7 @@ export function LiveCardPreview({ dados }: Props) {
             }`}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src =
-                'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80';
+                IMAGEM_FALLBACK_RODA;
             }}
           />
           <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-slate-800 text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full border border-slate-200 shadow-xs">
@@ -75,7 +76,7 @@ export function LiveCardPreview({ dados }: Props) {
 
         <div className="p-4 flex flex-col gap-2">
           <div>
-            <h4 className="font-bold text-slate-900 text-base line-clamp-1">
+            <h4 className="font-bold text-slate-900 text-base">
               {dados.titulo || 'Título da Roda Automotiva'}
             </h4>
             <div className="flex items-center justify-between text-xs text-slate-500 font-mono mt-0.5">
@@ -93,7 +94,7 @@ export function LiveCardPreview({ dados }: Props) {
             <span className="text-[11px] font-bold px-2.5 py-0.5 bg-slate-100 text-slate-800 rounded-full">
               Tala {dados.tala || 6.0}"
             </span>
-            <span className="text-[11px] font-bold px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full border border-blue-100">
+            <span className="text-[11px] font-bold px-2.5 py-0.5 bg-yellow-50 text-yellow-700 rounded-full border border-yellow-100">
               {dados.furacao || '4x100'}
             </span>
           </div>

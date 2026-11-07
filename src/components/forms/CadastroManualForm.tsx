@@ -3,6 +3,8 @@ import { Plus, Trash2, CheckCircle2 } from 'lucide-react';
 import { LiveCardPreview } from './LiveCardPreview';
 import { useProdutoMutations } from '@/hooks/useProdutoMutations';
 import { ProdutoSchema, type Produto } from '@/lib/schemas/produto';
+import { IMAGEM_FALLBACK_RODA } from '@/lib/assets';
+import { UploadImagemCloudinary } from './UploadImagemCloudinary';
 
 export function CadastroManualForm() {
   const { criarProduto } = useProdutoMutations();
@@ -68,7 +70,7 @@ export function CadastroManualForm() {
 
     const parseResult = ProdutoSchema.safeParse({
       ...formData,
-      imagens: cleanedImgs.length > 0 ? cleanedImgs : ['https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80'],
+      imagens: cleanedImgs.length > 0 ? cleanedImgs : [IMAGEM_FALLBACK_RODA],
     });
 
     if (!parseResult.success) {
@@ -127,7 +129,7 @@ export function CadastroManualForm() {
               value={formData.titulo || ''}
               onChange={(e) => handleInputChange('titulo', e.target.value)}
               placeholder="Ex: Roda Esportiva Scorro S-250 Aro 15"
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
             />
             {erros.titulo && <span className="text-xs text-red-600 mt-1 block">{erros.titulo}</span>}
           </div>
@@ -144,7 +146,7 @@ export function CadastroManualForm() {
                 value={formData.sku || ''}
                 onChange={(e) => handleInputChange('sku', e.target.value.toUpperCase())}
                 placeholder="Ex: SCR-S250-15"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-blue-600 focus:bg-white uppercase transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-yellow-400 focus:bg-white uppercase transition-all"
               />
               {erros.sku && <span className="text-xs text-red-600 mt-1 block">{erros.sku}</span>}
             </div>
@@ -159,7 +161,7 @@ export function CadastroManualForm() {
                 value={formData.marca || ''}
                 onChange={(e) => handleInputChange('marca', e.target.value.toUpperCase())}
                 placeholder="Ex: SCORRO, BBS, TSW"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white uppercase transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white uppercase transition-all"
               />
               {erros.marca && <span className="text-xs text-red-600 mt-1 block">{erros.marca}</span>}
             </div>
@@ -174,7 +176,7 @@ export function CadastroManualForm() {
                 value={formData.modelo || ''}
                 onChange={(e) => handleInputChange('modelo', e.target.value)}
                 placeholder="Ex: S-250, Santa Monica"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
               {erros.modelo && <span className="text-xs text-red-600 mt-1 block">{erros.modelo}</span>}
             </div>
@@ -191,7 +193,7 @@ export function CadastroManualForm() {
                 value={formData.acabamento || ''}
                 onChange={(e) => handleInputChange('acabamento', e.target.value)}
                 placeholder="Ex: Diamantada, Grafite Fosco, Dourado"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
             </div>
 
@@ -202,7 +204,7 @@ export function CadastroManualForm() {
               <select
                 value={formData.condicao || 'Nova'}
                 onChange={(e) => handleInputChange('condicao', e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 focus:bg-white transition-all cursor-pointer"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-yellow-400 focus:bg-white transition-all cursor-pointer"
               >
                 <option value="Nova">Nova</option>
                 <option value="Seminova">Seminova</option>
@@ -226,7 +228,7 @@ export function CadastroManualForm() {
                 value={formData.aro || ''}
                 onChange={(e) => handleInputChange('aro', Number(e.target.value))}
                 placeholder="Ex: 15"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
               {erros.aro && <span className="text-xs text-red-600 mt-1 block">{erros.aro}</span>}
             </div>
@@ -244,7 +246,7 @@ export function CadastroManualForm() {
                 value={formData.tala || ''}
                 onChange={(e) => handleInputChange('tala', Number(e.target.value))}
                 placeholder="Ex: 6.0"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
               {erros.tala && <span className="text-xs text-red-600 mt-1 block">{erros.tala}</span>}
             </div>
@@ -259,7 +261,7 @@ export function CadastroManualForm() {
                 value={formData.furacao || ''}
                 onChange={(e) => handleInputChange('furacao', e.target.value)}
                 placeholder="Ex: 4x100"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
               {erros.furacao && <span className="text-xs text-red-600 mt-1 block">{erros.furacao}</span>}
             </div>
@@ -274,7 +276,7 @@ export function CadastroManualForm() {
                 value={formData.cabeca_chave || ''}
                 onChange={(e) => handleInputChange('cabeca_chave', e.target.value)}
                 placeholder="Ex: 17mm"
-                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
               />
               {erros.cabeca_chave && (
                 <span className="text-xs text-red-600 mt-1 block">{erros.cabeca_chave}</span>
@@ -296,7 +298,7 @@ export function CadastroManualForm() {
                 value={formData.preco || ''}
                 onChange={(e) => handleInputChange('preco', Number(e.target.value))}
                 placeholder="Ex: 2890.00"
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 transition-all"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-yellow-400 transition-all"
               />
               {erros.preco && <span className="text-xs text-red-600 mt-1 block">{erros.preco}</span>}
             </div>
@@ -312,7 +314,7 @@ export function CadastroManualForm() {
                 value={formData.estoque ?? 0}
                 onChange={(e) => handleInputChange('estoque', Number(e.target.value))}
                 placeholder="Ex: 4"
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-600 transition-all"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-yellow-400 transition-all"
               />
               {erros.estoque && <span className="text-xs text-red-600 mt-1 block">{erros.estoque}</span>}
             </div>
@@ -324,7 +326,7 @@ export function CadastroManualForm() {
               <select
                 value={formData.status || 'Ativo'}
                 onChange={(e) => handleInputChange('status', e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:border-blue-600 transition-all cursor-pointer"
+                className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold focus:outline-none focus:border-yellow-400 transition-all cursor-pointer"
               >
                 <option value="Ativo">Ativo (Visível no catálogo)</option>
                 <option value="Inativo">Inativo (Pausado)</option>
@@ -341,13 +343,22 @@ export function CadastroManualForm() {
               <button
                 type="button"
                 onClick={handleAddImageUrl}
-                className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 hover:text-blue-700"
+                className="inline-flex items-center gap-1 text-xs font-bold text-yellow-400 hover:text-yellow-700"
               >
                 <Plus className="w-3.5 h-3.5" /> Adicionar mais fotos
               </button>
             </div>
 
             <div className="space-y-2">
+              <UploadImagemCloudinary
+                sku={formData.sku}
+                onUpload={(urls) => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    imagens: [...(prev.imagens || []).filter((imagem) => imagem.trim()), ...urls],
+                  }));
+                }}
+              />
               {(formData.imagens || ['']).map((url, idx) => (
                 <div key={idx} className="flex items-center gap-2">
                   <input
@@ -355,7 +366,7 @@ export function CadastroManualForm() {
                     value={url}
                     onChange={(e) => handleUpdateImageUrl(idx, e.target.value)}
                     placeholder={`https://exemplo.com/roda-foto-${idx + 1}.jpg`}
-                    className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+                    className="flex-1 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
                   />
                   {(formData.imagens || []).length > 1 && (
                     <button
@@ -383,7 +394,7 @@ export function CadastroManualForm() {
               value={formData.descricao || ''}
               onChange={(e) => handleInputChange('descricao', e.target.value)}
               placeholder="Informações adicionais sobre offset, compatibilidade veicular, furação e pintura..."
-              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:bg-white transition-all"
+              className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:bg-white transition-all"
             />
           </div>
 

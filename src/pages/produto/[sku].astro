@@ -6,7 +6,7 @@ import { ProdutoDetalheView } from '@/components/detail/ProdutoDetalheView';
 
 const { sku } = Astro.params;
 ---
-<BaseLayout title={`Ficha Técnica - ${sku} | Catálogo de Rodas`}>
+<BaseLayout title={`Ficha Técnica - ${sku} | Guidon Rodas`}>
   <QueryProvider client:load>
     <ProdutoDetalheView sku={sku!} client:load />
   </QueryProvider>

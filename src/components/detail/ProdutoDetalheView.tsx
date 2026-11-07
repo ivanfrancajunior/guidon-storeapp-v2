@@ -3,6 +3,7 @@ import { ArrowLeft, Edit3, Trash2, ShieldCheck, Wrench, Layers, DollarSign, Box,
 import { useProdutoDetailQuery } from '@/hooks/useProdutosQuery';
 import { useProdutoMutations } from '@/hooks/useProdutoMutations';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { IMAGEM_FALLBACK_RODA } from '@/lib/assets';
 
 interface Props {
   sku: string;
@@ -41,7 +42,7 @@ function ProdutoDetalheViewContent({ sku }: Props) {
 
   const imagens = produto.imagens && produto.imagens.length > 0
     ? produto.imagens
-    : ['https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80'];
+    : [IMAGEM_FALLBACK_RODA];
 
   const precoFormatado = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -141,7 +142,7 @@ function ProdutoDetalheViewContent({ sku }: Props) {
                   onClick={() => setSelectedImgIndex(idx)}
                   className={`w-20 h-20 aspect-square rounded-2xl bg-slate-50 p-2 border-2 transition-all shrink-0 flex items-center justify-center overflow-hidden ${
                     selectedImgIndex === idx
-                      ? 'border-blue-600 shadow-md ring-2 ring-blue-100'
+                      ? 'border-yellow-400 shadow-md ring-2 ring-yellow-100'
                       : 'border-slate-200 hover:border-slate-300'
                   }`}
                 >
@@ -167,7 +168,7 @@ function ProdutoDetalheViewContent({ sku }: Props) {
               <span className="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-3 py-1 rounded-md">
                 SKU: {produto.sku}
               </span>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-md border border-blue-100">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-yellow-700 bg-yellow-50 px-3 py-1 rounded-md border border-yellow-100">
                 {produto.marca}
               </span>
               <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
@@ -259,11 +260,11 @@ function ProdutoDetalheViewContent({ sku }: Props) {
           </div>
 
           {/* Garantia & Certificação */}
-          <div className="bg-blue-50/60 border border-blue-200/70 rounded-2xl p-4 flex items-center gap-3.5 text-xs text-blue-900">
-            <ShieldCheck className="w-6 h-6 text-blue-600 shrink-0" />
+          <div className="bg-yellow-50/60 border border-yellow-200/70 rounded-2xl p-4 flex items-center gap-3.5 text-xs text-yellow-900">
+            <ShieldCheck className="w-6 h-6 text-yellow-400 shrink-0" />
             <div>
               <span className="font-bold block">Garantia e Autenticidade Garantida</span>
-              <p className="text-blue-700/90 leading-tight">
+              <p className="text-yellow-700/90 leading-tight">
                 Produto verificado e inspecionado conforme especificações técnicas do fabricante e balanceamento dimensional.
               </p>
             </div>

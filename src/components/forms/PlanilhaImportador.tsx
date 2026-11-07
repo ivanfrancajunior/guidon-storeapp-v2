@@ -4,6 +4,7 @@ import * as XLSX from 'xlsx';
 import { UploadCloud, CheckCircle2, AlertCircle, Download, FileSpreadsheet } from 'lucide-react';
 import { useProdutoMutations } from '@/hooks/useProdutoMutations';
 import { ProdutoSchema, type Produto } from '@/lib/schemas/produto';
+import { IMAGEM_FALLBACK_RODA } from '@/lib/assets';
 
 interface LinhaValidada {
   raw: any;
@@ -92,7 +93,7 @@ export function PlanilhaImportador() {
       }
 
       if (imagensArr.length === 0) {
-        imagensArr = ['https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80'];
+        imagensArr = [IMAGEM_FALLBACK_RODA];
       }
 
       const rawStatus = getVal('Status', 'status', 'situacao', 'Situação');
@@ -228,8 +229,8 @@ export function PlanilhaImportador() {
         onClick={() => document.getElementById('sheetFileInput')?.click()}
         className={`border-2 border-dashed rounded-[20px] p-10 text-center cursor-pointer transition-all ${
           isDragging
-            ? 'border-blue-600 bg-blue-50/80 shadow-md'
-            : 'border-slate-300 hover:border-blue-500 bg-white hover:bg-slate-50 shadow-xs'
+            ? 'border-yellow-400 bg-yellow-50/80 shadow-md'
+            : 'border-slate-300 hover:border-yellow-500 bg-white hover:bg-slate-50 shadow-xs'
         }`}
       >
         <input
@@ -242,7 +243,7 @@ export function PlanilhaImportador() {
             if (file) handleFileUpload(file);
           }}
         />
-        <UploadCloud className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+        <UploadCloud className="w-12 h-12 text-yellow-400 mx-auto mb-3" />
         <h3 className="font-extrabold text-slate-900 text-base mb-1">
           Clique ou arraste sua planilha CSV ou Excel (.xlsx)
         </h3>

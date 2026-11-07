@@ -8,10 +8,10 @@ export default {
         surface: '#ffffff',
         border: '#e2e8f0',
         brand: {
-          DEFAULT: '#0f172a',
-          hover: '#1e293b',
-          accent: '#2563eb',
-          'accent-light': '#eff6ff',
+          DEFAULT: '#111111',
+          hover: '#2a2a2a',
+          accent: '#FFD400',
+          'accent-light': '#FFF7CC',
         },
         stock: {
           ok: '#16a34a',

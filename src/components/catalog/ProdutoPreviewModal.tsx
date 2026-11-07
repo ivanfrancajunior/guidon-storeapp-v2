@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, ExternalLink, Edit3, ChevronLeft, ChevronRight, CheckCircle2, AlertTriangle, XCircle, Box, DollarSign, Sparkles } from 'lucide-react';
 import type { Produto } from '@/lib/schemas/produto';
+import { IMAGEM_FALLBACK_RODA } from '@/lib/assets';
 
 interface Props {
   produto: Produto;
@@ -20,7 +21,7 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
 
   const imagens = produto.imagens && produto.imagens.length > 0 
     ? produto.imagens 
-    : ['https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80'];
+    : [IMAGEM_FALLBACK_RODA];
 
   const precoFormatado = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -49,7 +50,7 @@ export function ProdutoPreviewModal({ produto, onClose }: Props) {
               <span className="text-xs font-mono font-bold bg-slate-100 text-slate-700 px-2.5 py-0.5 rounded-md">
                 SKU: {produto.sku}
               </span>
-              <span className="text-xs font-bold uppercase text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+              <span className="text-xs font-bold uppercase text-yellow-400 bg-yellow-50 px-2 py-0.5 rounded-md">
                 {produto.marca}
               </span>
               <span className="text-xs font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded-md">

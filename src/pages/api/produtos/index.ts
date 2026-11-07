@@ -18,6 +18,8 @@ export const GET: APIRoute = async ({ request }) => {
   const status = url.searchParams.get('status');
   const apenasEstoque = url.searchParams.get('apenasEstoque') === 'true';
   const ordenacao = url.searchParams.get('ordenacao') || 'recentes';
+  const page = Math.max(1, Number.parseInt(url.searchParams.get('page') || '1', 10) || 1);
+  const limit = Math.min(100, Math.max(1, Number.parseInt(url.searchParams.get('limit') || '100', 10) || 100));
 
   let sql = 'SELECT * FROM produtos WHERE 1=1';
   const args: (string | number)[] = [];
@@ -105,6 +107,27 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   try {
+    const countResult = await turso.execute({
+      sql: sql.replace('SELECT *', 'SELECT COUNT(*) AS total'),
+      args,
+    });
+    const total = Number(countResult.rows[0]?.total ?? 0);
+
+    const distinctQueries = await Promise.all([
+      turso.execute("SELECT marca AS valor, COUNT(*) AS total FROM produtos WHERE marca IS NOT NULL AND TRIM(marca) <> '' GROUP BY marca ORDER BY marca"),
+      turso.execute("SELECT aro AS valor, COUNT(*) AS total FROM produtos WHERE aro IS NOT NULL GROUP BY aro ORDER BY aro"),
+      turso.execute("SELECT tala AS valor, COUNT(*) AS total FROM produtos WHERE tala IS NOT NULL GROUP BY tala ORDER BY tala"),
+      turso.execute("SELECT furacao AS valor, COUNT(*) AS total FROM produtos WHERE furacao IS NOT NULL AND TRIM(furacao) <> '' GROUP BY furacao ORDER BY furacao"),
+      turso.execute("SELECT cabeca_chave AS valor, COUNT(*) AS total FROM produtos WHERE cabeca_chave IS NOT NULL AND TRIM(cabeca_chave) <> '' GROUP BY cabeca_chave ORDER BY cabeca_chave"),
+    ]);
+    const facetas = distinctQueries.map((result) =>
+      result.rows.map((row) => ({
+        valor: row.valor,
+        total: Number(row.total),
+      }))
+    );
+
+    sql += ` LIMIT ${limit} OFFSET ${(page - 1) * limit}`;
     const result = await turso.execute({ sql, args });
     const produtos = result.rows.map((row) => {
       let imagensArr: string[] = [];
@@ -126,7 +149,21 @@ export const GET: APIRoute = async ({ request }) => {
       };
     });
 
-    return new Response(JSON.stringify(produtos), {
+    const totalPages = Math.max(1, Math.ceil(total / limit));
+    return new Response(JSON.stringify({
+      produtos,
+      total,
+      page,
+      limit,
+      totalPages,
+      facetas: {
+        marcas: facetas[0],
+        aros: facetas[1],
+        talas: facetas[2],
+        furacoes: facetas[3],
+        cabecasChave: facetas[4],
+      },
+    }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { Produto, FiltrosCatalogo } from '@/lib/schemas/produto';
 
 export function useProdutosQuery(filtros: FiltrosCatalogo) {
-  return useQuery<Produto[]>({
+  return useQuery<CatalogoProdutosResponse>({
     queryKey: ['produtos', filtros],
     queryFn: async () => {
       const p = new URLSearchParams();
@@ -17,6 +17,8 @@ export function useProdutosQuery(filtros: FiltrosCatalogo) {
       if (filtros.status) p.set('status', filtros.status);
       if (filtros.apenasEstoque) p.set('apenasEstoque', 'true');
       if (filtros.ordenacao) p.set('ordenacao', filtros.ordenacao);
+      if (filtros.page) p.set('page', filtros.page.toString());
+      p.set('limit', '100');
 
       const res = await fetch(`/api/produtos?${p.toString()}`);
       if (!res.ok) {
@@ -26,6 +28,26 @@ export function useProdutosQuery(filtros: FiltrosCatalogo) {
     },
     placeholderData: (prev) => prev,
   });
+}
+
+export interface FacetaCatalogo {
+  valor: string | number;
+  total: number;
+}
+
+export interface CatalogoProdutosResponse {
+  produtos: Produto[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  facetas: {
+    marcas: FacetaCatalogo[];
+    aros: FacetaCatalogo[];
+    talas: FacetaCatalogo[];
+    furacoes: FacetaCatalogo[];
+    cabecasChave: FacetaCatalogo[];
+  };
 }
 
 export function useProdutoDetailQuery(idOrSku: string) {

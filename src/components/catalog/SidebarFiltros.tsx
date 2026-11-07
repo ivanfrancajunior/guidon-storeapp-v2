@@ -1,14 +1,16 @@
 import React from 'react';
 import { Search, RotateCcw, Filter, CheckCircle2, Box } from 'lucide-react';
 import type { FiltrosCatalogo, Produto } from '@/lib/schemas/produto';
+import type { CatalogoProdutosResponse } from '@/hooks/useProdutosQuery';
 
 interface Props {
   filtros: FiltrosCatalogo;
   onFiltrosChange: (filtros: FiltrosCatalogo) => void;
   produtos: Produto[];
+  facetas?: CatalogoProdutosResponse['facetas'];
 }
 
-export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
+export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: Props) {
   // Extrai facetas dinâmicas e calcula contadores
   const marcasDisponiveis = Array.from(new Set(produtos.map((p) => p.marca.toUpperCase()))).sort();
   const arosDisponiveis = Array.from(new Set(produtos.map((p) => p.aro))).sort((a, b) => a - b);
@@ -20,6 +22,10 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
   const condicoesDisponiveis = Array.from(
     new Set(produtos.map((p) => p.condicao || 'Nova').filter((v) => v.length > 0))
   ).sort();
+  const cabecasChaveDisponiveis = (facetas?.cabecasChave ?? [])
+    .map((faceta) => String(faceta.valor))
+    .filter((valor) => valor.length > 0)
+    .sort();
 
   const handleSearch = (q: string) => {
     onFiltrosChange({ ...filtros, q });
@@ -68,7 +74,7 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
             value={filtros.q || ''}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder="Ex: Scorro 15 4x100, SKU..."
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all shadow-xs"
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-100 transition-all shadow-xs"
           />
         </div>
       </div>
@@ -132,7 +138,7 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
       {/* Cabeçalho da Sidebar */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-200">
         <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700">
-          <Filter className="w-3.5 h-3.5 text-blue-600" />
+          <Filter className="w-3.5 h-3.5 text-yellow-400" />
           <span>Filtros Facetados</span>
         </div>
         {temFiltroAtivo && (
@@ -158,7 +164,7 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
             return (
               <label
                 key={marca}
-                className="flex items-center justify-between text-xs cursor-pointer select-none py-1 hover:text-blue-600 group"
+                className="flex items-center justify-between text-xs cursor-pointer select-none py-1 hover:text-yellow-400 group"
               >
                 <div className="flex items-center gap-2">
                   <input
@@ -170,13 +176,13 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
                         marca: isSelected ? undefined : marca,
                       })
                     }
-                    className="w-3.5 h-3.5 accent-blue-600 rounded cursor-pointer"
+                    className="w-3.5 h-3.5 accent-yellow-400 rounded cursor-pointer"
                   />
-                  <span className={isSelected ? 'font-bold text-blue-600' : 'text-slate-700'}>
+                  <span className={isSelected ? 'font-bold text-yellow-400' : 'text-slate-700'}>
                     {marca}
                   </span>
                 </div>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 group-hover:bg-yellow-50 group-hover:text-yellow-400">
                   {count}
                 </span>
               </label>
@@ -236,7 +242,7 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
             return (
               <label
                 key={furacao}
-                className="flex items-center justify-between text-xs cursor-pointer select-none py-1 hover:text-blue-600 group"
+                className="flex items-center justify-between text-xs cursor-pointer select-none py-1 hover:text-yellow-400 group"
               >
                 <div className="flex items-center gap-2">
                   <input
@@ -248,13 +254,13 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
                         furacao: isSelected ? undefined : furacao,
                       })
                     }
-                    className="w-3.5 h-3.5 accent-blue-600 rounded cursor-pointer"
+                    className="w-3.5 h-3.5 accent-yellow-400 rounded cursor-pointer"
                   />
-                  <span className={isSelected ? 'font-bold text-blue-600' : 'text-slate-700'}>
+                  <span className={isSelected ? 'font-bold text-yellow-400' : 'text-slate-700'}>
                     {furacao}
                   </span>
                 </div>
-                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 group-hover:bg-yellow-50 group-hover:text-yellow-400">
                   {count}
                 </span>
               </label>
@@ -290,6 +296,47 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos }: Props) {
                 >
                   {cond}
                 </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Acordeão / Grupo: Cabeça de Chave */}
+      {cabecasChaveDisponiveis.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
+          <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 block">
+            Cabeça de Chave
+          </span>
+          <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
+            {cabecasChaveDisponiveis.map((cabeca) => {
+              const faceta = facetas?.cabecasChave.find((item) => String(item.valor) === cabeca);
+              const isSelected = filtros.cabeca_chave?.toUpperCase() === cabeca.toUpperCase();
+              return (
+                <label
+                  key={cabeca}
+                  className="flex items-center justify-between text-xs cursor-pointer select-none py-1 hover:text-yellow-400 group"
+                >
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() =>
+                        onFiltrosChange({
+                          ...filtros,
+                          cabeca_chave: isSelected ? undefined : cabeca,
+                        })
+                      }
+                      className="w-3.5 h-3.5 accent-yellow-400 rounded cursor-pointer"
+                    />
+                    <span className={isSelected ? 'font-bold text-yellow-400' : 'text-slate-700'}>
+                      {cabeca}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500 group-hover:bg-yellow-50 group-hover:text-yellow-400">
+                    {faceta?.total ?? 0}
+                  </span>
+                </label>
               );
             })}
           </div>

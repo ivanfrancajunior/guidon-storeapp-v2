@@ -43,6 +43,7 @@ export interface FiltrosCatalogo {
   status?: 'Ativo' | 'Inativo';
   apenasEstoque?: boolean;
   ordenacao?: 'recentes' | 'preco-asc' | 'preco-desc' | 'aro-asc' | 'aro-desc' | 'titulo-asc' | 'titulo-desc';
+  page?: number;
 }
 
 // Opções para filtros no frontend

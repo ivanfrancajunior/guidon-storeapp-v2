@@ -2,8 +2,12 @@ node_modules/
 .astro/
 dist/
 .env
+base_final*.xlsx
 local.db
 local.db-journal
 local.db-shm
 local.db-wal
 .DS_Store
+
+# Local Netlify folder
+.netlify

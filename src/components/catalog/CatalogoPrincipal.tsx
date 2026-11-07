@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { LayoutGrid, List, SearchX, ArrowUpDown } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { LayoutGrid, List, SearchX, ArrowUpDown, ChevronLeft, ChevronRight, ArrowUp } from 'lucide-react';
 import { SidebarFiltros } from './SidebarFiltros';
 import { ProdutoCard } from './ProdutoCard';
 import { ProdutoPreviewModal } from './ProdutoPreviewModal';
@@ -7,9 +7,11 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useProdutosQuery } from '@/hooks/useProdutosQuery';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import type { Produto, FiltrosCatalogo } from '@/lib/schemas/produto';
+import { IMAGEM_FALLBACK_RODA } from '@/lib/assets';
 
 function CatalogoPrincipalContent() {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [mostrarBotaoTopo, setMostrarBotaoTopo] = useState(false);
   const [filtros, setFiltros] = useState<FiltrosCatalogo>({
     q: '',
     marca: undefined,
@@ -34,15 +36,44 @@ function CatalogoPrincipalContent() {
     q: debouncedQ,
   };
 
-  const { data: produtos = [], isLoading, isError, error } = useProdutosQuery(queryFiltros);
+  const { data, isLoading, isError, error } = useProdutosQuery(queryFiltros);
+  const produtos = data?.produtos ?? [];
+  const totalProdutos = data?.total ?? 0;
+  const paginaAtual = data?.page ?? filtros.page ?? 1;
+  const totalPaginas = data?.totalPages ?? 1;
+
+  const alterarFiltros = (novosFiltros: FiltrosCatalogo) => {
+    const filtrosAlteraram = JSON.stringify({ ...novosFiltros, page: undefined }) !==
+      JSON.stringify({ ...filtros, page: undefined });
+    setFiltros(filtrosAlteraram ? { ...novosFiltros, page: 1 } : novosFiltros);
+  };
+
+  const mudarPagina = (pagina: number) => {
+    setFiltros((filtrosAtuais) => ({ ...filtrosAtuais, page: pagina }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const atualizarVisibilidadeBotao = () => {
+      setMostrarBotaoTopo(window.scrollY > 400);
+    };
+    atualizarVisibilidadeBotao();
+    window.addEventListener('scroll', atualizarVisibilidadeBotao, { passive: true });
+    return () => window.removeEventListener('scroll', atualizarVisibilidadeBotao);
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [filtros.page]);
 
   return (
     <div className="max-w-[1720px] mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col lg:flex-row gap-8">
       {/* Sidebar com filtros facetados e busca reativa */}
       <SidebarFiltros
         filtros={filtros}
-        onFiltrosChange={setFiltros}
+        onFiltrosChange={alterarFiltros}
         produtos={produtos}
+        facetas={data?.facetas}
       />
 
       {/* Conteúdo Principal do Catálogo */}
@@ -58,7 +89,7 @@ function CatalogoPrincipalContent() {
                 'Carregando produtos do estoque...'
               ) : (
                 <span>
-                  Mostrando <strong className="text-slate-900">{produtos.length}</strong> modelo{produtos.length === 1 ? '' : 's'} de roda
+                  <strong className="text-slate-900">{totalProdutos}</strong> modelo{totalProdutos === 1 ? '' : 's'} de roda
                 </span>
               )}
             </p>
@@ -222,7 +253,7 @@ function CatalogoPrincipalContent() {
                     const capa =
                       produto.imagens && produto.imagens.length > 0
                         ? produto.imagens[0]
-                        : 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80';
+                        : IMAGEM_FALLBACK_RODA;
                     const precoFormatado = new Intl.NumberFormat('pt-BR', {
                       style: 'currency',
                       currency: 'BRL',
@@ -235,7 +266,7 @@ function CatalogoPrincipalContent() {
                         <td className="p-3 pl-5">
                           <div
                             onClick={() => setPreviewProduto(produto)}
-                            className="w-12 h-12 aspect-square bg-slate-50 rounded-lg p-1 border border-slate-200 flex items-center justify-center cursor-pointer hover:border-blue-500 transition-colors"
+                            className="w-12 h-12 aspect-square bg-slate-50 rounded-lg p-1 border border-slate-200 flex items-center justify-center cursor-pointer hover:border-yellow-500 transition-colors"
                           >
                             <img
                               src={capa}
@@ -244,10 +275,10 @@ function CatalogoPrincipalContent() {
                             />
                           </div>
                         </td>
-                        <td className="p-3 font-bold text-slate-900 max-w-xs truncate">
+                        <td className="p-3 font-bold text-slate-900 min-w-64">
                           <a
                             href={`/produto/${produto.sku}`}
-                            className="hover:text-blue-600 transition-colors"
+                            className="hover:text-yellow-400 transition-colors"
                           >
                             {produto.titulo}
                           </a>
@@ -260,7 +291,7 @@ function CatalogoPrincipalContent() {
                           Aro {produto.aro}" | Tala {produto.tala}"
                         </td>
                         <td className="p-3">
-                          <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md font-mono font-bold">
+                          <span className="bg-yellow-50 text-yellow-700 px-2 py-0.5 rounded-md font-mono font-bold">
                             {produto.furacao}
                           </span>
                         </td>
@@ -312,6 +343,32 @@ function CatalogoPrincipalContent() {
             </div>
           </div>
         )}
+
+        {!isLoading && !isError && produtos.length > 0 && totalPaginas > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-6">
+            <button
+              type="button"
+              onClick={() => mudarPagina(paginaAtual - 1)}
+              disabled={paginaAtual <= 1}
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold disabled:opacity-40"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Anterior
+            </button>
+            <span className="text-xs font-bold text-slate-600 px-2">
+              Página {paginaAtual} de {totalPaginas}
+            </span>
+            <button
+              type="button"
+              onClick={() => mudarPagina(paginaAtual + 1)}
+              disabled={paginaAtual >= totalPaginas}
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold disabled:opacity-40"
+            >
+              Próxima
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </main>
 
       {/* Modal de Pré-visualização Rápida */}
@@ -320,6 +377,18 @@ function CatalogoPrincipalContent() {
           produto={previewProduto}
           onClose={() => setPreviewProduto(null)}
         />
+      )}
+
+      {mostrarBotaoTopo && (
+        <button
+          type="button"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="fixed bottom-5 right-5 z-40 inline-flex items-center justify-center w-11 h-11 rounded-full bg-slate-900 text-white shadow-lg hover:bg-yellow-400 hover:text-slate-900 transition-colors"
+          title="Voltar ao topo"
+          aria-label="Voltar ao topo"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Eye, ExternalLink, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
 import type { Produto } from '@/lib/schemas/produto';
+import { IMAGEM_FALLBACK_RODA } from '@/lib/assets';
 
 interface Props {
   produto: Produto;
@@ -10,7 +11,7 @@ interface Props {
 export function ProdutoCard({ produto, onPreview }: Props) {
   const capa = produto.imagens && produto.imagens.length > 0 
     ? produto.imagens[0] 
-    : 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?auto=format&fit=crop&w=800&q=80';
+    : IMAGEM_FALLBACK_RODA;
 
   const precoFormatado = new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -90,7 +91,7 @@ export function ProdutoCard({ produto, onPreview }: Props) {
         <div>
           <a
             href={`/produto/${produto.sku}`}
-            className="font-bold text-slate-900 text-sm sm:text-base line-clamp-1 hover:text-blue-600 transition-colors"
+            className="font-bold text-slate-900 text-sm sm:text-base hover:text-yellow-400 transition-colors"
             title={produto.titulo}
           >
             {produto.titulo}
@@ -111,7 +112,7 @@ export function ProdutoCard({ produto, onPreview }: Props) {
           <span className="text-[11px] font-bold px-2.5 py-0.5 bg-slate-100 text-slate-800 rounded-full border border-slate-200/50">
             Tala {produto.tala}"
           </span>
-          <span className="text-[11px] font-bold px-2.5 py-0.5 bg-blue-50 text-blue-700 rounded-full border border-blue-100">
+          <span className="text-[11px] font-bold px-2.5 py-0.5 bg-yellow-50 text-yellow-700 rounded-full border border-yellow-100">
             {produto.furacao}
           </span>
           <span className="text-[11px] font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">
