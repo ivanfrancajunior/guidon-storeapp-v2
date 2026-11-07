@@ -1,0 +1,13 @@
+---
+// src/pages/produto/[sku].astro
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { QueryProvider } from '@/components/providers/QueryProvider';
+import { ProdutoDetalheView } from '@/components/detail/ProdutoDetalheView';
+
+const { sku } = Astro.params;
+---
+<BaseLayout title={`Ficha Técnica - ${sku} | Catálogo de Rodas`}>
+  <QueryProvider client:load>
+    <ProdutoDetalheView sku={sku!} client:load />
+  </QueryProvider>
+</BaseLayout>
