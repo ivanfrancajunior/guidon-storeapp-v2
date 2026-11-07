@@ -7,7 +7,8 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "seed:excel": "tsx scripts/seed-from-excel.ts"
   },
   "keywords": [],
   "dependencies": {
@@ -30,5 +31,9 @@
     "typescript": "5.9.3",
     "xlsx": "0.18.5",
     "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "dotenv": "^18.0.9",
+    "tsx": "^4.23.15"
   }
 }
