@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, RotateCcw, Filter, CheckCircle2, Box } from 'lucide-react';
+import React, { useState } from 'react';
+import { Search, RotateCcw, Filter, CheckCircle2, ChevronDown } from 'lucide-react';
 import type { FiltrosCatalogo, Produto } from '@/lib/schemas/produto';
 import type { CatalogoProdutosResponse } from '@/hooks/useProdutosQuery';
 
@@ -10,7 +10,55 @@ interface Props {
   facetas?: CatalogoProdutosResponse['facetas'];
 }
 
+function FiltroColapsavel({
+  id,
+  titulo,
+  aberto,
+  onToggle,
+  ativo = false,
+  children,
+}: {
+  id: string;
+  titulo: string;
+  aberto: boolean;
+  onToggle: (id: string) => void;
+  ativo?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+      <button
+        type="button"
+        aria-expanded={aberto}
+        aria-controls={`filtro-${id}`}
+        onClick={() => onToggle(id)}
+        className="w-full flex items-center justify-between gap-3 px-4 py-3.5 text-left"
+      >
+        <span className={`text-[11px] font-extrabold uppercase tracking-wider ${ativo ? 'text-yellow-500' : 'text-slate-500'}`}>
+          {titulo}
+        </span>
+        <span className="flex items-center gap-2">
+          {ativo && <span className="w-2 h-2 rounded-full bg-yellow-400" aria-label="Filtro ativo" />}
+          <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${aberto ? 'rotate-180' : ''}`} />
+        </span>
+      </button>
+      {aberto && (
+        <div id={`filtro-${id}`} className="px-4 pb-4 border-t border-slate-100 pt-3">
+          {children}
+        </div>
+      )}
+    </section>
+  );
+}
+
 export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: Props) {
+  const [filtrosAbertos, setFiltrosAbertos] = useState<string[]>([]);
+
+  const alternarFiltro = (id: string) => {
+    setFiltrosAbertos((atuais) =>
+      atuais.includes(id) ? atuais.filter((filtroId) => filtroId !== id) : [...atuais, id],
+    );
+  };
   // Extrai facetas dinâmicas e calcula contadores
   const marcasDisponiveis = Array.from(new Set(produtos.map((p) => p.marca.toUpperCase()))).sort();
   const arosDisponiveis = Array.from(new Set(produtos.map((p) => p.aro))).sort((a, b) => a - b);
@@ -80,10 +128,14 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: 
       </div>
 
       {/* Filtro Rápido de Status e Estoque */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col gap-3">
-        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block">
-          Status & Estoque
-        </span>
+      <FiltroColapsavel
+        id="status"
+        titulo="Status & Estoque"
+        aberto={filtrosAbertos.includes('status')}
+        onToggle={alternarFiltro}
+        ativo={filtros.status !== undefined || !!filtros.apenasEstoque}
+      >
+        <div className="flex flex-col gap-3">
         
         {/* Toggle Status Ativo / Inativo */}
         <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
@@ -114,7 +166,7 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: 
           >
             Inativos
           </button>
-        </div>
+          </div>
 
         <label className="flex items-center gap-2.5 text-xs font-semibold text-slate-800 cursor-pointer select-none pt-1 border-t border-slate-100">
           <input
@@ -134,6 +186,7 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: 
           </span>
         </label>
       </div>
+      </FiltroColapsavel>
 
       {/* Cabeçalho da Sidebar */}
       <div className="flex items-center justify-between pb-2 border-b border-slate-200">
@@ -153,10 +206,13 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: 
       </div>
 
       {/* Acordeão / Grupo: Marca */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 block">
-          Marca
-        </span>
+      <FiltroColapsavel
+        id="marca"
+        titulo="Marca"
+        aberto={filtrosAbertos.includes('marca')}
+        onToggle={alternarFiltro}
+        ativo={!!filtros.marca}
+      >
         <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
           {marcasDisponiveis.map((marca) => {
             const count = produtos.filter((p) => p.marca.toUpperCase() === marca).length;
@@ -189,13 +245,16 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: 
             );
           })}
         </div>
-      </div>
+      </FiltroColapsavel>
 
       {/* Acordeão / Grupo: Aro (Diâmetro) */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 block">
-          Aro (Diâmetro)
-        </span>
+      <FiltroColapsavel
+        id="aro"
+        titulo="Aro (Diâmetro)"
+        aberto={filtrosAbertos.includes('aro')}
+        onToggle={alternarFiltro}
+        ativo={filtros.aro !== undefined}
+      >
         <div className="flex flex-wrap gap-1.5">
           {arosDisponiveis.map((aro) => {
             const count = produtos.filter((p) => p.aro === aro).length;
@@ -228,13 +287,16 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: 
             );
           })}
         </div>
-      </div>
+      </FiltroColapsavel>
 
       {/* Acordeão / Grupo: Furação (PCD) */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 block">
-          Furação (PCD)
-        </span>
+      <FiltroColapsavel
+        id="furacao"
+        titulo="Furação (PCD)"
+        aberto={filtrosAbertos.includes('furacao')}
+        onToggle={alternarFiltro}
+        ativo={!!filtros.furacao}
+      >
         <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
           {furacoesDisponiveis.map((furacao) => {
             const count = produtos.filter((p) => p.furacao === furacao).length;
@@ -267,14 +329,17 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: 
             );
           })}
         </div>
-      </div>
+      </FiltroColapsavel>
 
       {/* Acordeão / Grupo: Condição */}
       {condicoesDisponiveis.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 block">
-            Condição
-          </span>
+        <FiltroColapsavel
+          id="condicao"
+          titulo="Condição"
+          aberto={filtrosAbertos.includes('condicao')}
+          onToggle={alternarFiltro}
+          ativo={!!filtros.condicao}
+        >
           <div className="flex flex-wrap gap-1.5">
             {condicoesDisponiveis.map((cond) => {
               const isSelected = filtros.condicao === cond;
@@ -299,15 +364,18 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: 
               );
             })}
           </div>
-        </div>
+        </FiltroColapsavel>
       )}
 
       {/* Acordeão / Grupo: Cabeça de Chave */}
       {cabecasChaveDisponiveis.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 block">
-            Cabeça de Chave
-          </span>
+        <FiltroColapsavel
+          id="cabeca-chave"
+          titulo="Cabeça de Chave"
+          aberto={filtrosAbertos.includes('cabeca-chave')}
+          onToggle={alternarFiltro}
+          ativo={!!filtros.cabeca_chave}
+        >
           <div className="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
             {cabecasChaveDisponiveis.map((cabeca) => {
               const faceta = facetas?.cabecasChave.find((item) => String(item.valor) === cabeca);
@@ -340,15 +408,18 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: 
               );
             })}
           </div>
-        </div>
+        </FiltroColapsavel>
       )}
 
       {/* Acordeão / Grupo: Tala */}
       {talasDisponiveis.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-          <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400 mb-2.5 block">
-            Tala (Largura)
-          </span>
+        <FiltroColapsavel
+          id="tala"
+          titulo="Tala (Largura)"
+          aberto={filtrosAbertos.includes('tala')}
+          onToggle={alternarFiltro}
+          ativo={filtros.tala !== undefined}
+        >
           <div className="flex flex-wrap gap-1.5">
             {talasDisponiveis.map((tala) => {
               const count = produtos.filter((p) => p.tala === tala).length;
@@ -381,7 +452,7 @@ export function SidebarFiltros({ filtros, onFiltrosChange, produtos, facetas }: 
               );
             })}
           </div>
-        </div>
+        </FiltroColapsavel>
       )}
     </aside>
   );
